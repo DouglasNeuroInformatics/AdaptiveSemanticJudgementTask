@@ -1,0 +1,13 @@
+{
+  "include": ["src","public"],
+  "extends":["@douglasneuroinformatics/tsconfig"],
+  "compilerOptions":{
+    // required to import runtime modules 
+    "paths": {"/runtime/v1/*":["./node_modules/@opendatacapture/runtime-v1/dist/*"]},
+    "module": "ESNext",
+    "moduleResolution":"Bundler",
+    "lib":["ESNext", "DOM", "DOM.Iterable"],
+    "allowImportingTsExtensions": true,
+  },
+
+}

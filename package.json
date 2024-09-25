@@ -1,0 +1,26 @@
+{
+  "name": "DNP jsPysch Template",
+  "version": "0.1.0",
+  "author": "Cian Monnin",
+  "description": "<PLACEHOLDER>",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "tsc && eslint --fix src",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@opendatacapture/runtime-v1": "latest",
+    "docsify": "^4.13.1"
+  },
+  "devDependencies": {
+    "@douglasneuroinformatics/eslint-config": "^4.3.0",
+    "@douglasneuroinformatics/tsconfig": "^1.0.1",
+    "@types/node": "^20.14.12",
+    "eslint": "^8.57.0",
+    "typescript": "~5.5.4",
+    "vite": "^5.3.4"
+  },
+  "packageManager": "pnpm@9.1.4"
+}
