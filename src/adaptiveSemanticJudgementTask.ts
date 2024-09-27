@@ -1,21 +1,19 @@
-// a generic jsPsych expieriment
-
 import type { Language } from "@opendatacapture/runtime-v1/@opendatacapture/runtime-core/index.js";
 
 import { transformAndDownload, transformAndExportJson } from "./dataMunger.ts";
 import { experimentSettingsJson } from "./experimentSettings.ts";
 import i18n from "./i18n.ts";
 import {
-  $ExperimentImage,
   $Settings,
-  type ExperimentImage,
+  $WordPairStimulus,
   type LoggingTrial,
   type ParticipantResponse,
+  type WordPairStimulus,
 } from "./schemas.ts";
-import { stimuliPaths } from "./stimuliPaths.ts";
+import { stimuliList } from "./stimuliList.ts";
 
 import { HtmlKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-keyboard-response@2.x";
-import { ImageKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-image-keyboard-response@2.x";
+// import { ImageKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-image-keyboard-response@2.x";
 import { PreloadPlugin } from "/runtime/v1/@jspsych/plugin-preload@2.x";
 import { SurveyHtmlFormPlugin } from "/runtime/v1/@jspsych/plugin-survey-html-form@2.x";
 import { DOMPurify } from "/runtime/v1/dompurify@3.x";
@@ -26,7 +24,9 @@ import {
   xoroshiro128plus,
 } from "/runtime/v1/pure-rand@6.x";
 
-export async function jsPsychExperiment(onFinish?: (data: any) => void) {
+export async function adaptiveSemanticJudgementTask(
+  onFinish?: (data: any) => void,
+) {
   //****************************
   //****EXPERIMENT_SETTINGS*****
   //****************************
@@ -37,23 +37,22 @@ export async function jsPsychExperiment(onFinish?: (data: any) => void) {
   let numberOfCorrectAnswers = 0;
   let numberOfTrialsRun = 1;
   let settingsParseResult;
-  let imageDBParseResult;
+  let stimuliListParseResult;
 
   settingsParseResult = $Settings.safeParse(experimentSettingsJson);
-  imageDBParseResult = $ExperimentImage.array().safeParse(stimuliPaths);
+  stimuliListParseResult = $WordPairStimulus.array().safeParse(stimuliList);
   if (!settingsParseResult.success) {
     throw new Error("validation error, check experiment settings", {
       cause: settingsParseResult.error,
     });
   }
-  if (!imageDBParseResult.success) {
-    throw new Error("validation error, check imageDB", {
-      cause: imageDBParseResult.error,
+  if (!stimuliListParseResult.success) {
+    throw new Error("validation error, check stimuli list", {
+      cause: stimuliListParseResult.error,
     });
   }
-  const imageDB = imageDBParseResult.data;
+  const wordPairDB = stimuliListParseResult.data;
   const {
-    totalNumberOfTrialsToRun,
     advancementSchedule,
     regressionSchedule,
     language,
@@ -80,8 +79,8 @@ specific to this experiment
 
   // closure
   function getRandomElementWithSeed(
-    array: ExperimentImage[],
-  ): ExperimentImage[] {
+    array: WordPairStimulus[],
+  ): WordPairStimulus[] {
     let randomIndex: number;
     let foundUnique = false;
 
@@ -109,18 +108,17 @@ specific to this experiment
     return result;
   }
 
-  // draw an image at random from the bank depending on the difficulty_level selected
   // closure
   // specific to this experiment
   function createStimuli(
     difficultyLevel: number,
     language: string,
     clearSet: boolean,
-  ): ExperimentImage[] {
+  ): WordPairStimulus[] {
     if (clearSet === true) {
       indiciesSelected.clear();
     }
-    let imgList: ExperimentImage[] = imageDB.filter(
+    let imgList: WordPairStimulus[] = wordPairDB.filter(
       (image) =>
         image.difficultyLevel === difficultyLevel &&
         image.language === language,
@@ -188,7 +186,7 @@ specific to this experiment
       stimulus: "",
       type: HtmlKeyboardResponsePlugin,
     };
-    const showImg = {
+    const showWordPair = {
       on_start: function () {
         document.addEventListener(
           "click",
@@ -197,8 +195,7 @@ specific to this experiment
         );
       },
       stimulus: jsPsych.timelineVariable("stimulus"),
-      stimulus_height: 600,
-      type: ImageKeyboardResponsePlugin,
+      type: HtmlKeyboardResponsePlugin,
     };
 
     const logging = {
@@ -252,7 +249,7 @@ specific to this experiment
       on_timeline_start: function () {
         this.timeline_variables = experimentStimuli;
       },
-      timeline: [preload, blankPage, showImg, blankPage, logging],
+      timeline: [preload, blankPage, showWordPair, blankPage, logging],
       timeline_variables: experimentStimuli,
     };
     timeline.push(testProcedure);

@@ -2,7 +2,6 @@
 // configurable by user in the instrument playground
 const experimentSettingsJson = {
   // example:
-  totalNumberOfTrialsToRun: 5,
   advancementSchedule: 2,
   regressionSchedule: 0,
   language: "fr",
