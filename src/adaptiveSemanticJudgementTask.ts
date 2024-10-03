@@ -23,6 +23,7 @@ import {
   uniformIntDistribution,
   xoroshiro128plus,
 } from "/runtime/v1/pure-rand@6.x";
+import TextToSpeechButtonResponse from "./textToSpeechButtonResponse.ts";
 
 export async function adaptiveSemanticJudgementTask(
   onFinish?: (data: any) => void,
@@ -40,6 +41,7 @@ export async function adaptiveSemanticJudgementTask(
   let stimuliListParseResult;
 
   settingsParseResult = $Settings.safeParse(experimentSettingsJson);
+
   stimuliListParseResult = $WordPairStimulus.array().safeParse(stimuliList);
   if (!settingsParseResult.success) {
     throw new Error("validation error, check experiment settings", {
@@ -52,6 +54,9 @@ export async function adaptiveSemanticJudgementTask(
     });
   }
   const wordPairDB = stimuliListParseResult.data;
+  console.log("lllllll");
+  console.table(wordPairDB);
+  console.log("lllllll");
   const {
     advancementSchedule,
     regressionSchedule,
@@ -155,6 +160,13 @@ specific to this experiment
         }
       },
     });
+
+    const textToSpeech = {
+      type: TextToSpeechButtonResponse,
+      stimulus: "This is a string",
+      lang: "en_US",
+      choices: ["related", "unrelated"],
+    };
 
     const welcome = {
       on_start: function () {
@@ -302,6 +314,6 @@ specific to this experiment
       },
       timeline,
     };
-    void jsPsych.run([welcome, loop_node]);
+    void jsPsych.run([welcome, textToSpeech, loop_node]);
   })();
 }
