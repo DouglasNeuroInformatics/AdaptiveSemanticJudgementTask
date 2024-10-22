@@ -1,10 +1,11 @@
-import { JsPsych, ParameterType } from "/runtime/v1/jspsych@8.x";
+import { version } from "../package.json";
 
 import type { JsPsychPlugin, TrialType } from "/runtime/v1/jspsych@8.x";
 
-import { version } from "../package.json";
+import { JsPsych, ParameterType } from "/runtime/v1/jspsych@8.x";
 
-const info = <const>{
+
+const info = {
   name: "text-to-speech-button-response",
   version: version,
   parameters: {
@@ -35,7 +36,7 @@ const info = <const>{
      */
     button_html: {
       type: ParameterType.FUNCTION,
-      default: function (choice: string) {
+      default: function(choice: string) {
         return `<button class="jspsych-btn">${choice}</button>`;
       },
     },
@@ -114,6 +115,21 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
 
   constructor(private jsPsych: JsPsych) {
     this.jsPsych = jsPsych;
+  }
+
+  simulate(
+    trial: TrialType<Info>,
+    simulation_mode,
+    simulation_options: any,
+    load_callback: () => void,
+  ) {
+    if (simulation_mode == "data-only") {
+      load_callback();
+      this.simulate_data_only(trial, simulation_options);
+    }
+    if (simulation_mode == "visual") {
+      this.simulate_visual(trial, simulation_options, load_callback);
+    }
   }
 
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
@@ -243,21 +259,6 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
     // end trial if time limit is set
     if (trial.trial_duration !== null) {
       this.jsPsych.pluginAPI.setTimeout(end_trial, trial.trial_duration);
-    }
-  }
-
-  simulate(
-    trial: TrialType<Info>,
-    simulation_mode,
-    simulation_options: any,
-    load_callback: () => void,
-  ) {
-    if (simulation_mode == "data-only") {
-      load_callback();
-      this.simulate_data_only(trial, simulation_options);
-    }
-    if (simulation_mode == "visual") {
-      this.simulate_visual(trial, simulation_options, load_callback);
     }
   }
 

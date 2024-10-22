@@ -11,6 +11,8 @@ import {
   type WordPairStimulus,
 } from "./schemas.ts";
 import { stimuliList } from "./stimuliList.ts";
+import TextToSpeechButtonResponse from "./textToSpeechButtonResponse.ts";
+import TextToSpeechKeyboardResponsePlugin from "./textToSpeechKeyboardResponse.ts";
 
 import { HtmlKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-keyboard-response@2.x";
 // import { ImageKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-image-keyboard-response@2.x";
@@ -23,7 +25,6 @@ import {
   uniformIntDistribution,
   xoroshiro128plus,
 } from "/runtime/v1/pure-rand@6.x";
-import TextToSpeechButtonResponse from "./textToSpeechButtonResponse.ts";
 
 export async function adaptiveSemanticJudgementTask(
   onFinish?: (data: any) => void,
@@ -54,9 +55,6 @@ export async function adaptiveSemanticJudgementTask(
     });
   }
   const wordPairDB = stimuliListParseResult.data;
-  console.log("lllllll");
-  console.table(wordPairDB);
-  console.log("lllllll");
   const {
     advancementSchedule,
     regressionSchedule,
@@ -69,7 +67,7 @@ export async function adaptiveSemanticJudgementTask(
 
   // small hack to get around i18n issues with wait for changeLanguage
   i18n.changeLanguage(language as Language);
-  await new Promise(function (resolve) {
+  await new Promise(function(resolve) {
     i18n.onLanguageChange = resolve;
   });
 
@@ -146,11 +144,11 @@ specific to this experiment
   // a trial is a single object eg htmlKeyboardResponse etc ...
   const timeline: any[] = [];
 
-  (function () {
+  (function() {
     let experimentStimuli = createStimuli(initialDifficulty, language, false);
     let currentDifficultyLevel = initialDifficulty;
     const jsPsych = initJsPsych({
-      on_finish: function () {
+      on_finish: function() {
         const data = jsPsych.data.get();
         if (downloadOnFinish) {
           transformAndDownload(data);
@@ -161,6 +159,11 @@ specific to this experiment
       },
     });
 
+    const textToSpeechKeyboard = {
+      type: TextToSpeechKeyboardResponsePlugin,
+      stimulus: "This is also a string",
+      lang: "en_US",
+    };
     const textToSpeech = {
       type: TextToSpeechButtonResponse,
       stimulus: "This is a string",
@@ -169,7 +172,7 @@ specific to this experiment
     };
 
     const welcome = {
-      on_start: function () {
+      on_start: function() {
         document.addEventListener(
           "click",
           () => simulateKeyPress(jsPsych, "a"),
@@ -188,7 +191,7 @@ specific to this experiment
     };
 
     const blankPage = {
-      on_start: function () {
+      on_start: function() {
         document.addEventListener(
           "click",
           () => simulateKeyPress(jsPsych, "a"),
@@ -199,15 +202,17 @@ specific to this experiment
       type: HtmlKeyboardResponsePlugin,
     };
     const showWordPair = {
-      on_start: function () {
+      on_start: function() {
         document.addEventListener(
           "click",
           () => simulateKeyPress(jsPsych, "a"),
           { once: true },
         );
       },
-      stimulus: jsPsych.timelineVariable("stimulus"),
-      type: HtmlKeyboardResponsePlugin,
+      lang: 'fr-Fr',
+      stimulus: jsPsych.timelineVariable("topStimulus"),
+      choices: ['related', 'unrelated'],
+      type: TextToSpeechButtonResponse,
     };
 
     const logging = {
@@ -215,11 +220,10 @@ specific to this experiment
       button_label: i18n.t("submit"),
       data: {
         stimulus: jsPsych.timelineVariable("stimulus"),
-        correctResponse: jsPsych.timelineVariable("correctResponse"),
         difficultyLevel: jsPsych.timelineVariable("difficultyLevel"),
         language: jsPsych.timelineVariable("language"),
       },
-      html: function () {
+      html: function() {
         const html = `
           <h3>${i18n.t("logResponse")}</h3>
           <input type="button" value="${i18n.t("correct")}" onclick="document.getElementById('result').value='${i18n.t("correct")}';">
@@ -232,7 +236,7 @@ specific to this experiment
           <p>${i18n.t("logResponseToContinue")}</p>`;
         return html;
       },
-      on_load: function () {
+      on_load: function() {
         const submitButton = document.getElementById(
           "jspsych-survey-html-form-next",
         ) as HTMLButtonElement;
@@ -248,7 +252,7 @@ specific to this experiment
           });
         });
       },
-      preamble: function () {
+      preamble: function() {
         const html = `<h3>${i18n.t("correctResponse")}</h3>
                     <p>${jsPsych.evaluateTimelineVariable("correctResponse")}</p>
                     <img src="${jsPsych.evaluateTimelineVariable("stimulus")}" width="300" height="300">`;
@@ -258,23 +262,28 @@ specific to this experiment
     };
     const testProcedure = {
       // to reload the experimentStimuli after one repetition has been completed
-      on_timeline_start: function () {
+      on_timeline_start: function() {
         this.timeline_variables = experimentStimuli;
       },
-      timeline: [preload, blankPage, showWordPair, blankPage, logging],
+      // timeline: [preload, blankPage, showWordPair, blankPage, logging],
+      timeline: [preload, blankPage, welcome, showWordPair, welcome, textToSpeechKeyboard, blankPage,],
+
       timeline_variables: experimentStimuli,
     };
     timeline.push(testProcedure);
 
     const loop_node = {
-      loop_function: function () {
+      loop_function: function() {
         // tracking number of corret answers
         // need to access logging trial info
         let clearSet = false;
 
-        if (numberOfTrialsRun === totalNumberOfTrialsToRun) {
-          return false;
-        }
+        console.log()
+
+        // if (numberOfTrialsRun === totalNumberOfTrialsToRun) {
+        //   return false;
+        // }
+
         // getting the most recent logged result
         const loggingResponseArray = jsPsych.data
           .get()
@@ -314,6 +323,7 @@ specific to this experiment
       },
       timeline,
     };
-    void jsPsych.run([welcome, textToSpeech, loop_node]);
+    // void jsPsych.run([welcome, textToSpeech, loop_node]);
+    void jsPsych.run([welcome, textToSpeech, textToSpeechKeyboard]);
   })();
 }
