@@ -8,6 +8,14 @@ const i18n = createI18Next({
       en: "Welcome. Press any key to begin",
       fr: "Bienvenue. Appuyez sur n'importe quelle touche pour commencer",
     },
+    practiceRound1Welcome: {
+      en: 'Practice Round 1',
+      fr: "Séance d'entraînement 1",
+    },
+    practiceRound2Welcome: {
+      en: 'Practice Round 2',
+      fr: "Séance d'entraînement 2",
+    },
     correctResponse: {
       en: "Correct response:",
       fr: "La réponse correcte est:",
@@ -47,7 +55,7 @@ const i18n = createI18Next({
   },
 });
 // the whole i18n implementation needs to be changed
-document.addEventListener("changeLanguage", function (event) {
+document.addEventListener("changeLanguage", function(event) {
   // @ts-expect-error the event does have a detail
   document.documentElement.setAttribute("lang", event.detail as string);
 });

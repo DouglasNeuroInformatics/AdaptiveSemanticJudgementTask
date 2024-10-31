@@ -40,6 +40,8 @@ export async function adaptiveSemanticJudgementTask(
   let numberOfTrialsRun = 1;
   let settingsParseResult;
   let stimuliListParseResult;
+  let practiceRound1Success = false
+
 
   settingsParseResult = $Settings.safeParse(experimentSettingsJson);
 
@@ -71,6 +73,8 @@ export async function adaptiveSemanticJudgementTask(
     i18n.onLanguageChange = resolve;
   });
 
+  let practiceRound1ExperimentStimuli = createStimuli(-1, language, false);
+  let practiceRound2ExperimentStimuli = createStimuli(-2, language, false);
   /*
 functions for generating
 experimentStimuli
@@ -112,7 +116,6 @@ specific to this experiment
   }
 
   // closure
-  // specific to this experiment
   function createStimuli(
     difficultyLevel: number,
     language: string,
@@ -131,7 +134,6 @@ specific to this experiment
   }
 
   // to handle clicks on a touchscreen as a keyboard response
-  // generically useful
   function simulateKeyPress(jsPsych: JsPsych, key: string) {
     jsPsych.pluginAPI.keyDown(key);
     jsPsych.pluginAPI.keyUp(key);
@@ -159,7 +161,7 @@ specific to this experiment
       },
     });
 
-    const textToSpeechKeyboard = {
+    /* const textToSpeechKeyboard = {
       type: TextToSpeechKeyboardResponsePlugin,
       stimulus: "This is also a string",
       lang: "en_US",
@@ -170,7 +172,7 @@ specific to this experiment
       lang: "en_US",
       choices: ["related", "unrelated"],
     };
-
+*/
     const welcome = {
       on_start: function() {
         document.addEventListener(
@@ -182,7 +184,29 @@ specific to this experiment
       stimulus: i18n.t("welcome"),
       type: HtmlKeyboardResponsePlugin,
     };
+    const practiceRound1WelcomePage = {
+      on_start: function() {
+        document.addEventListener(
+          "click",
+          () => simulateKeyPress(jsPsych, "a"),
+          { once: true },
+        );
+      },
+      stimulus: i18n.t("practiceRound1Welcome"),
+      type: HtmlKeyboardResponsePlugin,
+    };
 
+    const practiceRound2WelcomePage = {
+      on_start: function() {
+        document.addEventListener(
+          "click",
+          () => simulateKeyPress(jsPsych, "a"),
+          { once: true },
+        );
+      },
+      stimulus: i18n.t("practiceRound2Welcome"),
+      type: HtmlKeyboardResponsePlugin,
+    };
     const preload = {
       auto_preload: true,
       message: `<p>loading stimulus</p>`,
@@ -260,25 +284,44 @@ specific to this experiment
       },
       type: SurveyHtmlFormPlugin,
     };
-    const testProcedure = {
+    // const testProcedure = {
+    //   // to reload the experimentStimuli after one repetition has been completed
+    //   on_timeline_start: function() {
+    //     this.timeline_variables = experimentStimuli;
+    //   },
+    //   timeline: [preload, blankPage, welcome, showWordPair, welcome, textToSpeechKeyboard, blankPage,],
+    //
+    //   timeline_variables: experimentStimuli,
+    // };
+    // timeline.push(testProcedure);
+    //
+    const practiceRound1 = {
+
       // to reload the experimentStimuli after one repetition has been completed
       on_timeline_start: function() {
-        this.timeline_variables = experimentStimuli;
+        this.timeline_variables = practiceRound1ExperimentStimuli;
       },
-      // timeline: [preload, blankPage, showWordPair, blankPage, logging],
-      timeline: [preload, blankPage, welcome, showWordPair, welcome, textToSpeechKeyboard, blankPage,],
+      timeline: [preload, practiceRound1WelcomePage, blankPage, showWordPair, blankPage,],
 
-      timeline_variables: experimentStimuli,
-    };
-    timeline.push(testProcedure);
+      timeline_variables: practiceRound1ExperimentStimuli,
 
-    const loop_node = {
+    }
+    const practiceRound2 = {
+
+      // to reload the experimentStimuli after one repetition has been completed
+      on_timeline_start: function() {
+        this.timeline_variables = practiceRound2ExperimentStimuli;
+      },
+      timeline: [preload, practiceRound2WelcomePage, blankPage, showWordPair, blankPage,],
+
+      timeline_variables: practiceRound2ExperimentStimuli,
+
+    }
+    const loopNode = {
       loop_function: function() {
         // tracking number of corret answers
         // need to access logging trial info
         let clearSet = false;
-
-        console.log()
 
         // if (numberOfTrialsRun === totalNumberOfTrialsToRun) {
         //   return false;
@@ -324,6 +367,6 @@ specific to this experiment
       timeline,
     };
     // void jsPsych.run([welcome, textToSpeech, loop_node]);
-    void jsPsych.run([welcome, textToSpeech, textToSpeechKeyboard]);
+    void jsPsych.run([practiceRound1WelcomePage, practiceRound1, practiceRound2WelcomePage, practiceRound2, welcome, loopNode]);
   })();
 }
