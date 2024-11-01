@@ -72,16 +72,13 @@ export async function adaptiveSemanticJudgementTask(
   await new Promise(function(resolve) {
     i18n.onLanguageChange = resolve;
   });
-
-  let practiceRound1ExperimentStimuli = createStimuli(-1, language, false);
-  let practiceRound2ExperimentStimuli = createStimuli(-2, language, false);
-  /*
-functions for generating
-experimentStimuli
-specific to this experiment
-*/
-
   const indiciesSelected = new Set();
+  /*
+  functions for generating
+  experimentStimuli
+  specific to this experiment
+  */
+
   let rng = xoroshiro128plus(seed);
 
   // closure
@@ -92,6 +89,7 @@ specific to this experiment
     let foundUnique = false;
 
     // if all images have been shown clear the set
+
     if (indiciesSelected.size === array.length) {
       indiciesSelected.clear();
     }
@@ -124,12 +122,12 @@ specific to this experiment
     if (clearSet === true) {
       indiciesSelected.clear();
     }
-    let imgList: WordPairStimulus[] = wordPairDB.filter(
-      (image) =>
-        image.difficultyLevel === difficultyLevel &&
-        image.language === language,
+    let wordPairList: WordPairStimulus[] = wordPairDB.filter(
+      (wordPair) =>
+        wordPair.difficultyLevel === difficultyLevel &&
+        wordPair.language === language,
     );
-    let result = getRandomElementWithSeed(imgList);
+    let result = getRandomElementWithSeed(wordPairList);
     return result;
   }
 
@@ -138,7 +136,7 @@ specific to this experiment
     jsPsych.pluginAPI.keyDown(key);
     jsPsych.pluginAPI.keyUp(key);
   }
-
+  const clickHandler = () => simulateKeyPress(jsPsych, 'a')
   //****************************
   //********EXPERIMENT**********
   //****************************
@@ -149,6 +147,8 @@ specific to this experiment
   (function() {
     let experimentStimuli = createStimuli(initialDifficulty, language, false);
     let currentDifficultyLevel = initialDifficulty;
+    let practiceRound1ExperimentStimuli = createStimuli(-1, language, false);
+    let practiceRound2ExperimentStimuli = createStimuli(-2, language, false);
     const jsPsych = initJsPsych({
       on_finish: function() {
         const data = jsPsych.data.get();
@@ -177,9 +177,11 @@ specific to this experiment
       on_start: function() {
         document.addEventListener(
           "click",
-          () => simulateKeyPress(jsPsych, "a"),
-          { once: true },
-        );
+          clickHandler, { once: true },
+        )
+      },
+      on_finish: function() {
+        document.removeEventListener('click', clickHandler)
       },
       stimulus: i18n.t("welcome"),
       type: HtmlKeyboardResponsePlugin,
@@ -188,9 +190,11 @@ specific to this experiment
       on_start: function() {
         document.addEventListener(
           "click",
-          () => simulateKeyPress(jsPsych, "a"),
-          { once: true },
-        );
+          clickHandler, { once: true },
+        )
+      },
+      on_finish: function() {
+        document.removeEventListener('click', clickHandler)
       },
       stimulus: i18n.t("practiceRound1Welcome"),
       type: HtmlKeyboardResponsePlugin,
@@ -200,9 +204,11 @@ specific to this experiment
       on_start: function() {
         document.addEventListener(
           "click",
-          () => simulateKeyPress(jsPsych, "a"),
-          { once: true },
-        );
+          clickHandler, { once: true },
+        )
+      },
+      on_finish: function() {
+        document.removeEventListener('click', clickHandler)
       },
       stimulus: i18n.t("practiceRound2Welcome"),
       type: HtmlKeyboardResponsePlugin,
@@ -218,9 +224,11 @@ specific to this experiment
       on_start: function() {
         document.addEventListener(
           "click",
-          () => simulateKeyPress(jsPsych, "a"),
-          { once: true },
-        );
+          clickHandler, { once: true },
+        )
+      },
+      on_finish: function() {
+        document.removeEventListener('click', clickHandler)
       },
       stimulus: "",
       type: HtmlKeyboardResponsePlugin,
@@ -232,6 +240,9 @@ specific to this experiment
           () => simulateKeyPress(jsPsych, "a"),
           { once: true },
         );
+      },
+      on_finish: function() {
+        document.removeEventListener('click', clickHandler)
       },
       lang: 'fr-Fr',
       stimulus: jsPsych.timelineVariable("topStimulus"),
@@ -297,7 +308,6 @@ specific to this experiment
     //
     const practiceRound1 = {
 
-      // to reload the experimentStimuli after one repetition has been completed
       on_timeline_start: function() {
         this.timeline_variables = practiceRound1ExperimentStimuli;
       },
@@ -308,7 +318,6 @@ specific to this experiment
     }
     const practiceRound2 = {
 
-      // to reload the experimentStimuli after one repetition has been completed
       on_timeline_start: function() {
         this.timeline_variables = practiceRound2ExperimentStimuli;
       },
@@ -317,6 +326,16 @@ specific to this experiment
       timeline_variables: practiceRound2ExperimentStimuli,
 
     }
+    const testProcedure = {
+      // to reload the experimentStimuli after one repetition has been completed
+      on_timeline_start: function() {
+        this.timeline_variables = experimentStimuli;
+      },
+      timeline: [preload, blankPage, showWordPair, blankPage, logging],
+      timeline_variables: experimentStimuli,
+    };
+    timeline.push(testProcedure);
+
     const loopNode = {
       loop_function: function() {
         // tracking number of corret answers
