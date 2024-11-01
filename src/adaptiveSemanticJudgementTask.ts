@@ -136,7 +136,6 @@ export async function adaptiveSemanticJudgementTask(
     jsPsych.pluginAPI.keyDown(key);
     jsPsych.pluginAPI.keyUp(key);
   }
-  const clickHandler = () => simulateKeyPress(jsPsych, 'a')
   //****************************
   //********EXPERIMENT**********
   //****************************
@@ -161,6 +160,7 @@ export async function adaptiveSemanticJudgementTask(
       },
     });
 
+    const clickHandler = () => simulateKeyPress(jsPsych, 'a')
     /* const textToSpeechKeyboard = {
       type: TextToSpeechKeyboardResponsePlugin,
       stimulus: "This is also a string",
@@ -385,7 +385,7 @@ export async function adaptiveSemanticJudgementTask(
       },
       timeline,
     };
-    // void jsPsych.run([welcome, textToSpeech, loop_node]);
+    //void jsPsych.run([welcome,]);
     void jsPsych.run([practiceRound1WelcomePage, practiceRound1, practiceRound2WelcomePage, practiceRound2, welcome, loopNode]);
   })();
 }

@@ -38,7 +38,7 @@ export const $Settings = z.object({
 export const $WordPairStimulus = z.object({
   topStimulus: z.string(),
   bottomStimulus: z.string(),
-  difficultyLevel: z.coerce.number().positive().int(),
+  difficultyLevel: z.coerce.number().int(),
   language: $Language,
   relation: $Related,
 });

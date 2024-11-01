@@ -125,6 +125,20 @@ const stimuliList = [
     language: "fr",
     relation: "unrelated",
   },
+  {
+    topStimulus: "Paire",
+    bottomStimulus: "de Mots-1",
+    difficultyLevel: -1,
+    language: "fr",
+    relation: "unrelated",
+  },
+  {
+    topStimulus: "Paire",
+    bottomStimulus: "de Mots-2",
+    difficultyLevel: -2,
+    language: "fr",
+    relation: "unrelated",
+  },
 ];
 
 export { stimuliList };
