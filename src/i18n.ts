@@ -1,7 +1,10 @@
 import { createI18Next } from "/runtime/v1/@opendatacapture/runtime-core";
 
 document.documentElement.setAttribute("lang", "en");
-
+const languageMap = {
+  'en': 'en-US',
+  'fr': 'fr-FR'
+}
 const i18n = createI18Next({
   translations: {
     welcome: {
@@ -13,8 +16,8 @@ const i18n = createI18Next({
       fr: "Séance d'entraînement 1",
     },
     practiceRound2Welcome: {
-      en: 'Practice Round 2',
-      fr: "Séance d'entraînement 2",
+      en: 'Practice Round 1',
+      fr: "Séance d'entraînement 1",
     },
     correctResponse: {
       en: "Correct response:",

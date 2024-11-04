@@ -29,15 +29,16 @@ export const $Settings = z.object({
   advancementSchedule: z.coerce.number().positive().int(),
   downloadOnFinish: z.coerce.boolean(),
   initialDifficulty: z.coerce.number().positive().int(),
-  language: z.string(),
+  language: $Language,
   numberOfLevels: z.coerce.number().positive().int(),
   regressionSchedule: z.coerce.number().int(),
-  seed: z.coerce.number().positive().int(),
+  numberOfRoundsPractice1: z.coerce.number().positive().int(),
+  numberOfRoundsPractice2: z.coerce.number().positive().int(),
+
 });
 
 export const $WordPairStimulus = z.object({
-  topStimulus: z.string(),
-  bottomStimulus: z.string(),
+  stimulus: z.string(),
   difficultyLevel: z.coerce.number().int(),
   language: $Language,
   relation: $Related,

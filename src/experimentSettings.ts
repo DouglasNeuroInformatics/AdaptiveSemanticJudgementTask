@@ -9,5 +9,7 @@ const experimentSettingsJson = {
   initialDifficulty: 1,
   numberOfLevels: 9,
   downloadOnFinish: false,
+  numberOfRoundsPractice1: 4,
+  numberOfRoundsPractice2: 8,
 };
 export { experimentSettingsJson };

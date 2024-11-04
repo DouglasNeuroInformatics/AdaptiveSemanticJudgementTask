@@ -1,3 +1,4 @@
+import HtmlButtonResponsePlugin from "@opendatacapture/runtime-v1/@jspsych/plugin-html-button-response@1.x/index.js";
 import type { Language } from "@opendatacapture/runtime-v1/@opendatacapture/runtime-core/index.js";
 
 import { transformAndDownload, transformAndExportJson } from "./dataMunger.ts";
@@ -41,6 +42,14 @@ export async function adaptiveSemanticJudgementTask(
   let settingsParseResult;
   let stimuliListParseResult;
   let practiceRound1Success = false
+  let totalNumberOfTrialsToRun = 4
+  // languageMap for mapping speech dispatcher language to 
+  // experiment language. If more languages are added the 
+  // map should be expanded to reflect new choices
+  const languageMap = {
+    'en': 'en-US',
+    'fr': 'fr-FR'
+  }
 
 
   settingsParseResult = $Settings.safeParse(experimentSettingsJson);
@@ -64,8 +73,11 @@ export async function adaptiveSemanticJudgementTask(
     numberOfLevels,
     seed,
     downloadOnFinish,
-    initialDifficulty,
+    initialDifficulty
   } = settingsParseResult.data;
+
+  let numberOfRoundsPractice1 = settingsParseResult.data.numberOfRoundsPractice1;
+  let numberOfRoundsPractice2 = settingsParseResult.data.numberOfRoundsPractice2;
 
   // small hack to get around i18n issues with wait for changeLanguage
   i18n.changeLanguage(language as Language);
@@ -89,7 +101,6 @@ export async function adaptiveSemanticJudgementTask(
     let foundUnique = false;
 
     // if all images have been shown clear the set
-
     if (indiciesSelected.size === array.length) {
       indiciesSelected.clear();
     }
@@ -141,7 +152,9 @@ export async function adaptiveSemanticJudgementTask(
   //****************************
   // a timeline is a set of trials
   // a trial is a single object eg htmlKeyboardResponse etc ...
-  const timeline: any[] = [];
+  const practiceRound1Timeline: any[] = []
+  const practiceRound2Timeline: any[] = []
+  const mainTimeline: any[] = [];
 
   (function() {
     let experimentStimuli = createStimuli(initialDifficulty, language, false);
@@ -159,7 +172,7 @@ export async function adaptiveSemanticJudgementTask(
         }
       },
     });
-
+    // clickHandler to simulateKeyPress on touchscreen
     const clickHandler = () => simulateKeyPress(jsPsych, 'a')
     /* const textToSpeechKeyboard = {
       type: TextToSpeechKeyboardResponsePlugin,
@@ -219,7 +232,6 @@ export async function adaptiveSemanticJudgementTask(
       show_progress_bar: true,
       type: PreloadPlugin,
     };
-
     const blankPage = {
       on_start: function() {
         document.addEventListener(
@@ -233,23 +245,41 @@ export async function adaptiveSemanticJudgementTask(
       stimulus: "",
       type: HtmlKeyboardResponsePlugin,
     };
+
     const showWordPair = {
-      on_start: function() {
-        document.addEventListener(
-          "click",
-          () => simulateKeyPress(jsPsych, "a"),
-          { once: true },
-        );
-      },
-      on_finish: function() {
-        document.removeEventListener('click', clickHandler)
-      },
-      lang: 'fr-Fr',
-      stimulus: jsPsych.timelineVariable("topStimulus"),
-      choices: ['related', 'unrelated'],
       type: TextToSpeechButtonResponse,
+      on_finish: function(data) {
+        data.userChoice = data.response === 0 ? 'related' : 'unrelated';  // using data.response instead
+        data.feedback = data.userChoice === data.correctResponse ? 'correct' : 'incorrect';
+      },
+      lang: languageMap[language],
+      stimulus: jsPsych.timelineVariable("stimulus"),
+      choices: ['related', 'unrelated'],
+      data: {
+        correctResponse: jsPsych.timelineVariable('relation'),
+      }
     };
 
+    const showResults = {
+      type: HtmlKeyboardResponsePlugin,
+      stimulus: function() {
+        // Get data from the last trial
+        const lastTrial = jsPsych.data.get().last(1).values()[0];
+
+        return `
+      <div class="results-display">
+        <h2>Results from previous trial:</h2>
+        <p>Your response: ${lastTrial.response}</p>
+        <p>Was correct: ${lastTrial.feedback}</p>
+        <br>
+        <p>Press any key to continue</p>
+      </div>
+    `;
+      },
+      data: {
+        task: 'feedback'
+      }
+    };
     const logging = {
       autofocus: "textBox",
       button_label: i18n.t("submit"),
@@ -295,38 +325,33 @@ export async function adaptiveSemanticJudgementTask(
       },
       type: SurveyHtmlFormPlugin,
     };
-    // const testProcedure = {
-    //   // to reload the experimentStimuli after one repetition has been completed
-    //   on_timeline_start: function() {
-    //     this.timeline_variables = experimentStimuli;
-    //   },
-    //   timeline: [preload, blankPage, welcome, showWordPair, welcome, textToSpeechKeyboard, blankPage,],
-    //
-    //   timeline_variables: experimentStimuli,
-    // };
-    // timeline.push(testProcedure);
-    //
+
     const practiceRound1 = {
 
       on_timeline_start: function() {
         this.timeline_variables = practiceRound1ExperimentStimuli;
       },
-      timeline: [preload, practiceRound1WelcomePage, blankPage, showWordPair, blankPage,],
+      timeline: [preload, blankPage, showWordPair, showResults, blankPage,],
 
       timeline_variables: practiceRound1ExperimentStimuli,
 
     }
+    practiceRound1Timeline.push(practiceRound1)
+
     const practiceRound2 = {
 
       on_timeline_start: function() {
         this.timeline_variables = practiceRound2ExperimentStimuli;
       },
-      timeline: [preload, practiceRound2WelcomePage, blankPage, showWordPair, blankPage,],
+      timeline: [preload, blankPage, showWordPair, blankPage,],
 
       timeline_variables: practiceRound2ExperimentStimuli,
 
     }
-    const testProcedure = {
+
+    practiceRound2Timeline.push(practiceRound2)
+
+    const mainTimelineTestProcedure = {
       // to reload the experimentStimuli after one repetition has been completed
       on_timeline_start: function() {
         this.timeline_variables = experimentStimuli;
@@ -334,17 +359,30 @@ export async function adaptiveSemanticJudgementTask(
       timeline: [preload, blankPage, showWordPair, blankPage, logging],
       timeline_variables: experimentStimuli,
     };
-    timeline.push(testProcedure);
+
+    mainTimeline.push(mainTimelineTestProcedure);
+    let currentPractice1Round = 1
+    const practiceRound1Loop = {
+      timeline: practiceRound1Timeline,
+      loop_function: function() {
+        if (currentPractice1Round === numberOfRoundsPractice1) {
+          return false
+        }
+        currentPractice1Round++
+        return true
+      }
+    }
 
     const loopNode = {
+      timeline: mainTimeline,
       loop_function: function() {
         // tracking number of corret answers
         // need to access logging trial info
         let clearSet = false;
 
-        // if (numberOfTrialsRun === totalNumberOfTrialsToRun) {
-        //   return false;
-        // }
+        if (numberOfTrialsRun === totalNumberOfTrialsToRun) {
+          return false;
+        }
 
         // getting the most recent logged result
         const loggingResponseArray = jsPsych.data
@@ -383,9 +421,8 @@ export async function adaptiveSemanticJudgementTask(
         numberOfTrialsRun++;
         return true;
       },
-      timeline,
     };
-    //void jsPsych.run([welcome,]);
-    void jsPsych.run([practiceRound1WelcomePage, practiceRound1, practiceRound2WelcomePage, practiceRound2, welcome, loopNode]);
+    //void jsPsych.run([welcome, loopNode]);
+    void jsPsych.run([practiceRound1WelcomePage, practiceRound1Loop, practiceRound2WelcomePage, practiceRound2, welcome, loopNode]);
   })();
 }
