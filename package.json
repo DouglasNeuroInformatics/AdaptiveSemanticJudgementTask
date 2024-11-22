@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@jspsych/plugin-html-button-response": "^2.0.0",
     "@opendatacapture/runtime-v1": "latest",
     "docsify": "^4.13.1"
   },
