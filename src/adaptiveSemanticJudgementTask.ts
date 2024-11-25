@@ -1,5 +1,5 @@
-import HtmlButtonResponsePlugin from "@opendatacapture/runtime-v1/@jspsych/plugin-html-button-response@1.x/index.js";
 import htmlButtonResponse from "@jspsych/plugin-html-button-response";
+import HtmlButtonResponsePlugin from "@opendatacapture/runtime-v1/@jspsych/plugin-html-button-response@1.x/index.js";
 import type { Language } from "@opendatacapture/runtime-v1/@opendatacapture/runtime-core/index.js";
 
 import { transformAndDownload, transformAndExportJson } from "./dataMunger.ts";
@@ -14,6 +14,8 @@ import {
   type WordPairTrial,
 } from "./schemas.ts";
 import { stimuliList } from "./stimuliList.ts";
+import { stimuliListPractice1 } from "./stimuliListPractice1.ts";
+import { stimuliListPractice2 } from "./stimuliListPractice2.ts";
 import TextToSpeechButtonResponse from "./textToSpeechButtonResponse.ts";
 import TextToSpeechKeyboardResponsePlugin from "./textToSpeechKeyboardResponse.ts";
 
@@ -44,7 +46,6 @@ export async function adaptiveSemanticJudgementTask(
   let numberOfCorrectAnswers = 0;
   let numberOfTrialsRun = 1;
   let settingsParseResult;
-  let stimuliListParseResult;
   let practiceRound1Success = false
   let totalNumberOfTrialsToRun = 4
   // languageMap for mapping speech dispatcher language to 
@@ -54,22 +55,33 @@ export async function adaptiveSemanticJudgementTask(
     'en': 'en-US',
     'fr': 'fr-FR'
   }
-
-
+  // parse settings
   settingsParseResult = $Settings.safeParse(experimentSettingsJson);
 
-  stimuliListParseResult = $WordPairStimulus.array().safeParse(stimuliList);
   if (!settingsParseResult.success) {
     throw new Error("validation error, check experiment settings", {
       cause: settingsParseResult.error,
     });
   }
-  if (!stimuliListParseResult.success) {
-    throw new Error("validation error, check stimuli list", {
-      cause: stimuliListParseResult.error,
-    });
+
+  // parse stimuli lists
+  const validateStimuliList = (data: WordPairStimulus[], name: string): WordPairStimulus[] => {
+    const result = $WordPairStimulus.array().safeParse(data)
+    if (!result.success) {
+      throw new Error(`validation error, check ${name} stimuli list`, {
+        cause: result.error,
+      });
+    }
+    if (result.data.length === 0) {
+      throw new Error(`${name} stimuli list cannot be empty`);
+    }
+    return result.data;
   }
-  const wordPairDB = stimuliListParseResult.data;
+
+  const wordPairDB = validateStimuliList(stimuliList, 'main');
+  const wordPairDBPractice1 = validateStimuliList(stimuliListPractice1, 'practice1');
+  const wordPairDBPractice2 = validateStimuliList(stimuliListPractice2, 'practice2');
+
   const {
     advancementSchedule,
     regressionSchedule,
@@ -83,8 +95,6 @@ export async function adaptiveSemanticJudgementTask(
   if (typeof settingsParseResult.data.seed === "number") {
     seed = settingsParseResult.data.seed;
   }
-  let numberOfRoundsPractice1 = settingsParseResult.data.numberOfRoundsPractice1;
-  let numberOfRoundsPractice2 = settingsParseResult.data.numberOfRoundsPractice2;
 
   // small hack to get around i18n issues with wait for changeLanguage
   i18n.changeLanguage(language as Language);
@@ -141,6 +151,8 @@ export async function adaptiveSemanticJudgementTask(
     difficultyLevel: number,
     language: string,
     clearSet: boolean,
+    random: boolean,
+    wordPairDB: WordPairStimulus[],
   ): WordPairStimulus[] {
     if (clearSet === true) {
       indiciesSelected.clear();
@@ -150,7 +162,24 @@ export async function adaptiveSemanticJudgementTask(
         wordPair.difficultyLevel === difficultyLevel &&
         wordPair.language === language,
     );
-    let result = getRandomElementWithSeed(wordPairList);
+    // if array is empty
+    if (wordPairList.length === 0) {
+      indiciesSelected.clear()
+      wordPairList = wordPairDB.filter(
+        (wordPair) =>
+          wordPair.difficultyLevel === difficultyLevel &&
+          wordPair.language === language,
+      );
+
+    }
+    let result
+    if (random) {
+
+      result = getRandomElementWithSeed(wordPairList);
+    }
+    else {
+      result = wordPairList
+    }
     return result;
   }
 
@@ -169,10 +198,10 @@ export async function adaptiveSemanticJudgementTask(
   const mainTimeline: any[] = [];
 
   (function() {
-    let experimentStimuli = createStimuli(initialDifficulty, language, false);
+    let experimentStimuli = createStimuli(initialDifficulty, language, false, true, wordPairDB);
     let currentDifficultyLevel = initialDifficulty;
-    let practiceRound1ExperimentStimuli = createStimuli(-1, language, false);
-    let practiceRound2ExperimentStimuli = createStimuli(-2, language, false);
+    let practiceRound1ExperimentStimuli = createStimuli(1, language, false, false, wordPairDBPractice1);
+    let practiceRound2ExperimentStimuli = createStimuli(1, language, false, false, wordPairDBPractice2);
     const jsPsych = initJsPsych({
       on_finish: function() {
         const data = jsPsych.data.get();
@@ -410,7 +439,7 @@ export async function adaptiveSemanticJudgementTask(
     const practiceRound1Loop = {
       timeline: practiceRound1Timeline,
       loop_function: function() {
-        if (currentPractice1Round === numberOfRoundsPractice1) {
+        if (currentPractice1Round === 8) {
           return false
         }
         currentPractice1Round++
@@ -462,6 +491,8 @@ export async function adaptiveSemanticJudgementTask(
           currentDifficultyLevel,
           language,
           clearSet,
+          true,
+          wordPairDB,
         );
         numberOfTrialsRun++;
         return true;

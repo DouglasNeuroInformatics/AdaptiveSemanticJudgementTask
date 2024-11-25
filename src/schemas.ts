@@ -38,8 +38,6 @@ export const $Settings = z.object({
   language: $Language,
   numberOfLevels: z.coerce.number().positive().int(),
   regressionSchedule: z.coerce.number().int(),
-  numberOfRoundsPractice1: z.coerce.number().positive().int(),
-  numberOfRoundsPractice2: z.coerce.number().positive().int(),
   seed: z.preprocess(
     (val) =>
       val === "" || val === null || val === 0 || val === undefined
