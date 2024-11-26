@@ -11,17 +11,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@jspsych/plugin-html-button-response": "^2.0.0",
-    "@opendatacapture/runtime-v1": "latest",
+    "@opendatacapture/runtime-v1": "^1.6.1",
     "docsify": "^4.13.1"
   },
   "devDependencies": {
-    "@douglasneuroinformatics/eslint-config": "^4.3.0",
-    "@douglasneuroinformatics/tsconfig": "^1.0.1",
-    "@types/node": "^20.14.12",
-    "eslint": "^8.57.0",
+    "@douglasneuroinformatics/eslint-config": "^4.3.1",
+    "@douglasneuroinformatics/tsconfig": "^1.0.2",
+    "@types/node": "^20.17.8",
+    "eslint": "^8.57.1",
     "typescript": "~5.5.4",
-    "vite": "^5.3.4"
+    "vite": "^5.4.11"
   },
   "packageManager": "pnpm@9.1.4"
 }

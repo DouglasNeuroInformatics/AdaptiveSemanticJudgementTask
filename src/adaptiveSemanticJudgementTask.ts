@@ -1,5 +1,3 @@
-import htmlButtonResponse from "@jspsych/plugin-html-button-response";
-import HtmlButtonResponsePlugin from "@opendatacapture/runtime-v1/@jspsych/plugin-html-button-response@1.x/index.js";
 import type { Language } from "@opendatacapture/runtime-v1/@opendatacapture/runtime-core/index.js";
 
 import { transformAndDownload, transformAndExportJson } from "./dataMunger.ts";
@@ -20,7 +18,7 @@ import TextToSpeechButtonResponse from "./textToSpeechButtonResponse.ts";
 import TextToSpeechKeyboardResponsePlugin from "./textToSpeechKeyboardResponse.ts";
 
 import "./styles/instuctions.css";
-
+import { HtmlButtonResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-button-response@2.x";
 import { HtmlKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-keyboard-response@2.x";
 // import { ImageKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-image-keyboard-response@2.x";
 import { PreloadPlugin } from "/runtime/v1/@jspsych/plugin-preload@2.x";
@@ -46,15 +44,14 @@ export async function adaptiveSemanticJudgementTask(
   let numberOfCorrectAnswers = 0;
   let numberOfTrialsRun = 1;
   let settingsParseResult;
-  let practiceRound1Success = false
-  let totalNumberOfTrialsToRun = 4
-  // languageMap for mapping speech dispatcher language to 
-  // experiment language. If more languages are added the 
+  let totalNumberOfTrialsToRun = 4;
+  // languageMap for mapping speech dispatcher language to
+  // experiment language. If more languages are added the
   // map should be expanded to reflect new choices
   const languageMap = {
-    'en': 'en-US',
-    'fr': 'fr-FR'
-  }
+    en: "en-US",
+    fr: "fr-FR",
+  };
   // parse settings
   settingsParseResult = $Settings.safeParse(experimentSettingsJson);
 
@@ -65,8 +62,11 @@ export async function adaptiveSemanticJudgementTask(
   }
 
   // parse stimuli lists
-  const validateStimuliList = (data: WordPairStimulus[], name: string): WordPairStimulus[] => {
-    const result = $WordPairStimulus.array().safeParse(data)
+  const validateStimuliList = (
+    data: WordPairStimulus[],
+    name: string,
+  ): WordPairStimulus[] => {
+    const result = $WordPairStimulus.array().safeParse(data);
     if (!result.success) {
       throw new Error(`validation error, check ${name} stimuli list`, {
         cause: result.error,
@@ -76,11 +76,17 @@ export async function adaptiveSemanticJudgementTask(
       throw new Error(`${name} stimuli list cannot be empty`);
     }
     return result.data;
-  }
+  };
 
-  const wordPairDB = validateStimuliList(stimuliList, 'main');
-  const wordPairDBPractice1 = validateStimuliList(stimuliListPractice1, 'practice1');
-  const wordPairDBPractice2 = validateStimuliList(stimuliListPractice2, 'practice2');
+  const wordPairDB = validateStimuliList(stimuliList, "main");
+  const wordPairDBPractice1 = validateStimuliList(
+    stimuliListPractice1,
+    "practice1",
+  );
+  const wordPairDBPractice2 = validateStimuliList(
+    stimuliListPractice2,
+    "practice2",
+  );
 
   const {
     advancementSchedule,
@@ -88,7 +94,7 @@ export async function adaptiveSemanticJudgementTask(
     language,
     numberOfLevels,
     downloadOnFinish,
-    initialDifficulty
+    initialDifficulty,
   } = settingsParseResult.data;
 
   let seed: number | undefined;
@@ -98,7 +104,7 @@ export async function adaptiveSemanticJudgementTask(
 
   // small hack to get around i18n issues with wait for changeLanguage
   i18n.changeLanguage(language as Language);
-  await new Promise(function(resolve) {
+  await new Promise(function (resolve) {
     i18n.onLanguageChange = resolve;
   });
   const indiciesSelected = new Set();
@@ -107,7 +113,7 @@ export async function adaptiveSemanticJudgementTask(
   experimentStimuli
   specific to this experiment
   */
-  let rng: PureRand.RandomGenerator
+  let rng: PureRand.RandomGenerator;
   if (seed) {
     rng = xoroshiro128plus(seed);
   } else {
@@ -164,21 +170,18 @@ export async function adaptiveSemanticJudgementTask(
     );
     // if array is empty
     if (wordPairList.length === 0) {
-      indiciesSelected.clear()
+      indiciesSelected.clear();
       wordPairList = wordPairDB.filter(
         (wordPair) =>
           wordPair.difficultyLevel === difficultyLevel &&
           wordPair.language === language,
       );
-
     }
-    let result
+    let result;
     if (random) {
-
       result = getRandomElementWithSeed(wordPairList);
-    }
-    else {
-      result = wordPairList
+    } else {
+      result = wordPairList;
     }
     return result;
   }
@@ -193,17 +196,35 @@ export async function adaptiveSemanticJudgementTask(
   //****************************
   // a timeline is a set of trials
   // a trial is a single object eg htmlKeyboardResponse etc ...
-  const practiceRound1Timeline: any[] = []
-  const practiceRound2Timeline: any[] = []
+  const practiceRound1Timeline: any[] = [];
+  const practiceRound2Timeline: any[] = [];
   const mainTimeline: any[] = [];
 
-  (function() {
-    let experimentStimuli = createStimuli(initialDifficulty, language, false, true, wordPairDB);
+  (function () {
+    let experimentStimuli = createStimuli(
+      initialDifficulty,
+      language,
+      false,
+      true,
+      wordPairDB,
+    );
     let currentDifficultyLevel = initialDifficulty;
-    let practiceRound1ExperimentStimuli = createStimuli(1, language, false, false, wordPairDBPractice1);
-    let practiceRound2ExperimentStimuli = createStimuli(1, language, false, false, wordPairDBPractice2);
+    let practiceRound1ExperimentStimuli = createStimuli(
+      1,
+      language,
+      false,
+      false,
+      wordPairDBPractice1,
+    );
+    let practiceRound2ExperimentStimuli = createStimuli(
+      1,
+      language,
+      false,
+      false,
+      wordPairDBPractice2,
+    );
     const jsPsych = initJsPsych({
-      on_finish: function() {
+      on_finish: function () {
         const data = jsPsych.data.get();
         if (downloadOnFinish) {
           transformAndDownload(data);
@@ -214,7 +235,7 @@ export async function adaptiveSemanticJudgementTask(
       },
     });
     // clickHandler to simulateKeyPress on touchscreen
-    const clickHandler = () => simulateKeyPress(jsPsych, 'a')
+    const clickHandler = () => simulateKeyPress(jsPsych, "a");
     /* const textToSpeechKeyboard = {
       type: TextToSpeechKeyboardResponsePlugin,
       stimulus: "This is also a string",
@@ -228,21 +249,18 @@ export async function adaptiveSemanticJudgementTask(
     };
 */
     const welcome = {
-      on_start: function() {
-        document.addEventListener(
-          "click",
-          clickHandler, { once: true },
-        )
+      on_start: function () {
+        document.addEventListener("click", clickHandler, { once: true });
       },
-      on_finish: function() {
-        document.removeEventListener('click', clickHandler)
+      on_finish: function () {
+        document.removeEventListener("click", clickHandler);
       },
       stimulus: i18n.t("welcome"),
       type: HtmlKeyboardResponsePlugin,
     };
 
     const instructions = {
-      stimulus: function() {
+      stimulus: function () {
         const html = `
           <div class="instructions-container">
            <div class="instructions-content">
@@ -271,34 +289,30 @@ export async function adaptiveSemanticJudgementTask(
         return html;
       },
       choices: [i18n.t("continue")],
-      type: htmlButtonResponse,
+      type: HtmlButtonResponsePlugin,
     };
     const practiceRound1WelcomePage = {
-      on_start: function() {
-        document.addEventListener(
-          "click",
-          clickHandler, { once: true },
-        )
+      on_start: function () {
+        document.addEventListener("click", clickHandler, { once: true });
       },
-      on_finish: function() {
-        document.removeEventListener('click', clickHandler)
+      on_finish: function () {
+        document.removeEventListener("click", clickHandler);
       },
       stimulus: i18n.t("practiceRound1Welcome"),
-      type: HtmlKeyboardResponsePlugin,
+      choices: [i18n.t("continue")],
+      type: HtmlButtonResponsePlugin,
     };
 
     const practiceRound2WelcomePage = {
-      on_start: function() {
-        document.addEventListener(
-          "click",
-          clickHandler, { once: true },
-        )
+      on_start: function () {
+        document.addEventListener("click", clickHandler, { once: true });
       },
-      on_finish: function() {
-        document.removeEventListener('click', clickHandler)
+      on_finish: function () {
+        document.removeEventListener("click", clickHandler);
       },
       stimulus: i18n.t("practiceRound2Welcome"),
-      type: HtmlKeyboardResponsePlugin,
+      choices: [i18n.t("continue")],
+      type: HtmlButtonResponsePlugin,
     };
     const preload = {
       auto_preload: true,
@@ -307,38 +321,43 @@ export async function adaptiveSemanticJudgementTask(
       type: PreloadPlugin,
     };
     const blankPage = {
-      on_start: function() {
-        document.addEventListener(
-          "click",
-          clickHandler, { once: true },
-        )
+      on_start: function () {
+        document.addEventListener("click", clickHandler, { once: true });
       },
-      on_finish: function() {
-        document.removeEventListener('click', clickHandler)
+      on_finish: function () {
+        document.removeEventListener("click", clickHandler);
       },
       stimulus: "",
-      type: HtmlKeyboardResponsePlugin,
+      choices: [i18n.t("continue")],
+      type: HtmlButtonResponsePlugin,
     };
 
     const showWordPair = {
       type: TextToSpeechButtonResponse,
-      on_finish: function(data: WordPairTrial) {
-        data.userChoice = data.response === 0 ? 'related' : 'unrelated';
-        data.result = data.userChoice === data.correctResponse ? 'correct' : 'incorrect';
+      on_finish: function (data: WordPairTrial) {
+        data.userChoice = data.response === 0 ? "related" : "unrelated";
+        data.result =
+          data.userChoice === data.correctResponse ? "correct" : "incorrect";
+        console.log(jsPsych.timelineVariable("difficultyLevel"));
+        console.log(data.difficultyLevel);
       },
       lang: languageMap[language],
       stimulus: jsPsych.timelineVariable("stimulus"),
-      choices: ['related', 'unrelated'],
+      choices: ["related", "unrelated"],
       data: {
-        correctResponse: jsPsych.timelineVariable('relation'),
-      }
+        correctResponse: jsPsych.timelineVariable("relation"),
+        difficultyLevel: jsPsych.timelineVariable("difficultyLevel"),
+      },
     };
 
     const showResults = {
-      type: HtmlKeyboardResponsePlugin,
-      stimulus: function() {
+      type: HtmlButtonResponsePlugin,
+      stimulus: function () {
         // Get data from the last trial
-        const lastTrial = jsPsych.data.get().last(1).values()[0] as WordPairTrial;
+        const lastTrial = jsPsych.data
+          .get()
+          .last(1)
+          .values()[0] as WordPairTrial;
 
         return `
       <div class="results-display">
@@ -350,128 +369,64 @@ export async function adaptiveSemanticJudgementTask(
       </div>
     `;
       },
+      choices: [i18n.t("continue")],
       data: {
-        task: 'feedback'
-      }
-    };
-    const logging = {
-      autofocus: "textBox",
-      button_label: i18n.t("submit"),
-      data: {
-        stimulus: jsPsych.timelineVariable("stimulus"),
-        difficultyLevel: jsPsych.timelineVariable("difficultyLevel"),
-        language: jsPsych.timelineVariable("language"),
+        task: "feedback",
       },
-      html: function() {
-        const html = `
-          <h3>${i18n.t("logResponse")}</h3>
-          <input type="button" value="${i18n.t("correct")}" onclick="document.getElementById('result').value='${i18n.t("correct")}';">
-          <input type="button" value="${i18n.t("incorrect")}" onclick="document.getElementById('result').value='${i18n.t("incorrect")}';">
-          <br>
-          <label for="result">${i18n.t("responseWas")}</label>
-          <input type="text" id="result" name="result" readonly>
-          <hr>
-          <input type="text" id="textBox" name="notes" placeholder="${i18n.t("logResponse")}">
-          <p>${i18n.t("logResponseToContinue")}</p>`;
-        return html;
-      },
-      on_load: function() {
-        const submitButton = document.getElementById(
-          "jspsych-survey-html-form-next",
-        ) as HTMLButtonElement;
-        const resultInput = document.getElementById(
-          "result",
-        ) as HTMLInputElement;
-        submitButton.disabled = true;
-        document.querySelectorAll('input[type="button"]').forEach((button) => {
-          button.addEventListener("click", () => {
-            if (resultInput.value !== "") {
-              submitButton.disabled = false;
-            }
-          });
-        });
-      },
-      preamble: function() {
-        const html = `<h3>${i18n.t("correctResponse")}</h3>
-                    <p>${jsPsych.evaluateTimelineVariable("correctResponse")}</p>
-                    <img src="${jsPsych.evaluateTimelineVariable("stimulus")}" width="300" height="300">`;
-        return DOMPurify.sanitize(html);
-      },
-      type: SurveyHtmlFormPlugin,
     };
 
     const practiceRound1 = {
-
-      on_timeline_start: function() {
-        this.timeline_variables = practiceRound1ExperimentStimuli;
-      },
-      timeline: [preload, blankPage, showWordPair, showResults, blankPage,],
-
+      timeline: [preload, blankPage, showWordPair, showResults, blankPage],
       timeline_variables: practiceRound1ExperimentStimuli,
-
-    }
-    practiceRound1Timeline.push(practiceRound1)
+    };
+    //practiceRound1Timeline.push(practiceRound1);
 
     const practiceRound2 = {
-
-      on_timeline_start: function() {
+      on_timeline_start: function () {
         this.timeline_variables = practiceRound2ExperimentStimuli;
       },
-      timeline: [preload, blankPage, showWordPair, blankPage,],
+      timeline: [preload, blankPage, showWordPair, blankPage],
 
       timeline_variables: practiceRound2ExperimentStimuli,
-
-    }
-
-    practiceRound2Timeline.push(practiceRound2)
+    };
 
     const mainTimelineTestProcedure = {
       // to reload the experimentStimuli after one repetition has been completed
-      on_timeline_start: function() {
+      on_timeline_start: function () {
         this.timeline_variables = experimentStimuli;
       },
-      timeline: [preload, blankPage, showWordPair, blankPage, logging],
+      timeline: [preload, blankPage, showWordPair, blankPage],
       timeline_variables: experimentStimuli,
     };
 
     mainTimeline.push(mainTimelineTestProcedure);
-    let currentPractice1Round = 1
+
+    let currentPractice1Round = 0;
     const practiceRound1Loop = {
       timeline: practiceRound1Timeline,
-      loop_function: function() {
-        if (currentPractice1Round === 8) {
-          return false
-        }
-        currentPractice1Round++
-        return true
-      }
-    }
+    };
 
     const loopNode = {
       timeline: mainTimeline,
-      loop_function: function() {
+      loop_function: function () {
         // tracking number of corret answers
         // need to access logging trial info
         let clearSet = false;
-
         if (numberOfTrialsRun === totalNumberOfTrialsToRun) {
           return false;
         }
 
-        // getting the most recent logged result
-        const loggingResponseArray = jsPsych.data
+        // getting the most recent result
+        const resultArray = jsPsych.data
           .get()
-          .filter({ trial_type: "survey-html-form" })
-          .values() as LoggingTrial[];
-        const lastTrialIndex = loggingResponseArray.length - 1;
-
-        const lastTrialResults: ParticipantResponse =
-          loggingResponseArray[lastTrialIndex]!.response;
-
-        if (lastTrialResults.result === "Correct") {
+          .filter({ trial_type: "text-to-speech-button-response" })
+          .values() as WordPairTrial[];
+        const lastTrialIndex = resultArray.length - 1;
+        const lastTrialResults: WordPairTrial = resultArray[lastTrialIndex]!;
+        if (lastTrialResults.result === "correct") {
           numberOfCorrectAnswers++;
           clearSet = false;
-        } else if (lastTrialResults.result === "Incorrect") {
+        } else if (lastTrialResults.result === "incorrect") {
           numberOfCorrectAnswers = 0;
         }
         // difficulty level logic, <x> correct answers in a row, increase, <y> incorrect answer decrease
@@ -499,6 +454,14 @@ export async function adaptiveSemanticJudgementTask(
       },
     };
     //void jsPsych.run([welcome, loopNode]);
-    void jsPsych.run([instructions, practiceRound1WelcomePage, practiceRound1Loop, practiceRound2WelcomePage, practiceRound2, welcome, loopNode]);
+    void jsPsych.run([
+      welcome,
+      instructions,
+      // practiceRound1WelcomePage,
+      // practiceRound1,
+      // practiceRound2WelcomePage,
+      // practiceRound2,
+      loopNode,
+    ]);
   })();
 }

@@ -2,9 +2,9 @@ import { createI18Next } from "/runtime/v1/@opendatacapture/runtime-core";
 
 document.documentElement.setAttribute("lang", "en");
 const languageMap = {
-  'en': 'en-US',
-  'fr': 'fr-FR'
-}
+  en: "en-US",
+  fr: "fr-FR",
+};
 const i18n = createI18Next({
   translations: {
     welcome: {
@@ -12,12 +12,12 @@ const i18n = createI18Next({
       fr: "Bienvenue. Appuyez sur n'importe quelle touche pour commencer",
     },
     practiceRound1Welcome: {
-      en: 'Practice Round 1',
+      en: "Practice Round 1",
       fr: "Séance d'entraînement 1",
     },
     practiceRound2Welcome: {
-      en: 'Practice Round 1',
-      fr: "Séance d'entraînement 1",
+      en: "Practice Round 2",
+      fr: "Séance d'entraînement 2",
     },
     correctResponse: {
       en: "Correct response:",
@@ -57,62 +57,62 @@ const i18n = createI18Next({
     },
     continue: {
       en: "Continue",
-      fr: "Continuer"
+      fr: "Continuer",
     },
     task: {
       title: {
         en: "Task Administrator Instructions",
-        fr: "Instructions de l'administrateur des tâches"
+        fr: "Instructions de l'administrateur des tâches",
       },
       intro: {
         en: "This task requires a task administrator. They are responsible for accurate data collection.",
-        fr: "Cette tâche nécessite un administrateur. Il est responsable de la collecte précise des données."
+        fr: "Cette tâche nécessite un administrateur. Il est responsable de la collecte précise des données.",
       },
       step1: {
         en: "A page will be shown before the image. When ready click 'continue'",
-        fr: "Une page sera affichée avant l'image. Lorsque vous êtes prêt, cliquez sur 'continuer'"
+        fr: "Une page sera affichée avant l'image. Lorsque vous êtes prêt, cliquez sur 'continuer'",
       },
       step2: {
         en: "There will be 500 ms pause then the image will be displayed and a time will start in the background",
-        fr: "Il y aura une pause de 500 ms, puis l'image sera affichée et un chronomètre démarrera en arrière-plan"
+        fr: "Il y aura une pause de 500 ms, puis l'image sera affichée et un chronomètre démarrera en arrière-plan",
       },
       step3: {
         en: "When the participant has given their response a key-press or mouse-click will stop the timer and the image will disappear",
-        fr: "Lorsque le participant aura donné sa réponse, une pression sur une touche ou un clic de souris arrêtera le chronomètre et l'image disparaîtra"
+        fr: "Lorsque le participant aura donné sa réponse, une pression sur une touche ou un clic de souris arrêtera le chronomètre et l'image disparaîtra",
       },
       step4: {
         en: "A new screen will be shown asking that the machine be given back to the task administrator",
-        fr: "Un nouvel écran s'affichera demandant que la machine soit rendue à l'administrateur de la tâche"
+        fr: "Un nouvel écran s'affichera demandant que la machine soit rendue à l'administrateur de la tâche",
       },
       step5: {
         en: "If the image was skipped by accident it can be repeated via this screen.",
-        fr: "Si l'image a été ignorée par accident, elle peut être répétée via cet écran."
+        fr: "Si l'image a été ignorée par accident, elle peut être répétée via cet écran.",
       },
       step6: {
         en: "The next screen will be for logging the response and any extra notes that are to be recorded",
-        fr: "L'écran suivant servira à enregistrer la réponse et toutes les notes supplémentaires à consigner"
+        fr: "L'écran suivant servira à enregistrer la réponse et toutes les notes supplémentaires à consigner",
       },
       step7: {
         en: "After the results have been recorded a new page will be displayed and the steps are repeated",
-        fr: "Après l'enregistrement des résultats, une nouvelle page s'affichera et les étapes seront répétées"
+        fr: "Après l'enregistrement des résultats, une nouvelle page s'affichera et les étapes seront répétées",
       },
       completion: {
         en: "Once all images have been displayed and all results have been recorded the data will be sent to Open Data Capture (if being used) and/or downloaded as .csv if parameters of the experiment have been set as such",
-        fr: "Une fois que toutes les images ont été affichées et que tous les résultats ont été enregistrés, les données seront envoyées à Open Data Capture (si utilisé) et/ou téléchargées au format .csv si les paramètres de l'expérience ont été définis comme tels"
-      }
+        fr: "Une fois que toutes les images ont été affichées et que tous les résultats ont été enregistrés, les données seront envoyées à Open Data Capture (si utilisé) et/ou téléchargées au format .csv si les paramètres de l'expérience ont été définis comme tels",
+      },
     },
     yes: {
-      en: 'Yes',
-      fr: "Oui"
+      en: "Yes",
+      fr: "Oui",
     },
     no: {
-      en: 'No',
-      fr: 'Non',
+      en: "No",
+      fr: "Non",
     },
   },
 });
 // the whole i18n implementation needs to be changed
-document.addEventListener("changeLanguage", function(event) {
+document.addEventListener("changeLanguage", function (event) {
   // @ts-expect-error the event does have a detail
   document.documentElement.setAttribute("lang", event.detail as string);
 });

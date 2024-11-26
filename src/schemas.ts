@@ -11,11 +11,11 @@ const $Trial = z.object({
   trialType: z.string(),
 });
 const $WordPairTrial = $Trial.extend({
-  userChoice: z.enum(['related', 'unrelated']),
-  result: z.enum(['correct', 'incorrect']),
+  userChoice: z.enum(["related", "unrelated"]),
+  result: z.enum(["correct", "incorrect"]),
   response: z.coerce.number().int(),
-  correctResponse: z.enum(['related', 'unrelated']),
-})
+  correctResponse: z.enum(["related", "unrelated"]),
+});
 
 const $LoggingTrial = $Trial.extend({
   rt: z.coerce.number().positive().int(),
@@ -45,7 +45,6 @@ export const $Settings = z.object({
         : val,
     z.coerce.number().positive().int().optional(),
   ),
-
 });
 
 export const $WordPairStimulus = z.object({
@@ -62,4 +61,5 @@ export type LoggingTrial = z.infer<typeof $LoggingTrial>;
 export type ExperimentResults = z.infer<typeof $ExperimentResults>;
 export type Settings = z.infer<typeof $Settings>;
 export type WordPairStimulus = z.infer<typeof $WordPairStimulus>;
-export type WordPairTrial = z.infer<typeof $WordPairTrial>
+export type WordPairTrial = z.infer<typeof $WordPairTrial>;
+//export type ResultType = WordPairTrial['result']
