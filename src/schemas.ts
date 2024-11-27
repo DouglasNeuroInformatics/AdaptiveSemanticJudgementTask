@@ -10,24 +10,26 @@ const $ParticipantResponse = z.object({
 const $Trial = z.object({
   trialType: z.string(),
 });
+
+export const $WordPairStimulus = z.object({
+  stimulus: z.string(),
+  difficultyLevel: z.coerce.number().int(),
+  language: $Language,
+  relation: $Related,
+});
+
 const $WordPairTrial = $Trial.extend({
+  ...$WordPairStimulus.shape,
   userChoice: z.enum(["related", "unrelated"]),
   result: z.enum(["correct", "incorrect"]),
   response: z.coerce.number().int(),
   correctResponse: z.enum(["related", "unrelated"]),
+  rt: z.coerce.number().int(),
 });
 
-const $LoggingTrial = $Trial.extend({
-  rt: z.coerce.number().positive().int(),
-  response: $ParticipantResponse,
-  difficultyLevel: z.coerce.number().positive().int(),
-  wordPair: z.string(),
-});
-
-export const $ExperimentResults = $LoggingTrial
-  .omit({ response: true, trialType: true })
+export const $ExperimentResults = $WordPairTrial
+  .omit({ trialType: true })
   .extend({
-    responseNotes: z.string(),
     responseResult: z.string(),
   });
 
@@ -45,13 +47,6 @@ export const $Settings = z.object({
         : val,
     z.coerce.number().positive().int().optional(),
   ),
-});
-
-export const $WordPairStimulus = z.object({
-  stimulus: z.string(),
-  difficultyLevel: z.coerce.number().int(),
-  language: $Language,
-  relation: $Related,
 });
 
 export type SupportedLanguage = z.infer<typeof $Language>;

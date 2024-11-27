@@ -1,26 +1,22 @@
 import { $ExperimentResults } from "./schemas.ts";
 
-import type { ExperimentResults, LoggingTrial } from "./schemas.ts";
+import type { ExperimentResults, WordPairTrial } from "./schemas.ts";
 import type { DataCollection } from "/runtime/v1/jspsych@8.x";
-
-import { DOMPurify } from "/runtime/v1/dompurify@3.x";
 
 function dataMunger(data: DataCollection) {
   const trials = data
-    .filter({ trial_type: "survey-html-form" })
-    .values() as LoggingTrial[];
+    .filter({ trial_type: "text-to-speech-button-response" })
+    .values() as WordPairTrial[];
   const experimentResults: ExperimentResults[] = [];
   for (let trial of trials) {
-    // parsed experimentResults go here
     const result = $ExperimentResults.parse({
-      //example:
       stimulus: trial.stimulus,
       correctResponse: trial.correctResponse,
+      response: trial.response,
       difficultyLevel: trial.difficultyLevel,
       language: trial.language,
       rt: trial.rt,
-      responseResult: trial.response.result,
-      responseNotes: DOMPurify.sanitize(trial.response.notes),
+      userChoice: trial.userChoice,
     });
     experimentResults.push(result);
   }
@@ -28,6 +24,14 @@ function dataMunger(data: DataCollection) {
   return experimentResults;
 }
 
+export function consoleLogData(data: DataCollection, trial_type?: string) {
+  if (trial_type) {
+    console.table(data.filter({ trial_type: trial_type }).values());
+  } else {
+    console.table(data.values());
+  }
+}
+// not used
 function arrayToCSV(array: ExperimentResults[]) {
   const header = Object.keys(array[0]!).join(",");
   const trials = array
@@ -36,6 +40,7 @@ function arrayToCSV(array: ExperimentResults[]) {
   return `${header}\n${trials}`;
 }
 
+// not used
 function downloadCSV(dataForCSV: string, filename: string) {
   const blob = new Blob([dataForCSV], { type: "text/csv;charset=utf8" });
   const url = URL.createObjectURL(blob);
@@ -46,6 +51,7 @@ function downloadCSV(dataForCSV: string, filename: string) {
   link.click();
   document.body.removeChild(link);
 }
+
 function getLocalTime() {
   const localTime = new Date();
 
@@ -68,14 +74,13 @@ function exportToJsonSerializable(data: ExperimentResults[]): {
     version: "1.0",
     timestamp: getLocalTime(),
     experimentResults: data.map((result) => ({
-      // create appropriate mapping, example:
       stimulus: result.stimulus,
       correctResponse: result.correctResponse,
+      response: result.response,
+      userChoice: result.userChoice,
       difficultyLevel: result.difficultyLevel,
       language: result.language,
       rt: result.rt,
-      responseResult: result.responseResult,
-      responseNotes: result.responseNotes,
     })),
   };
 }

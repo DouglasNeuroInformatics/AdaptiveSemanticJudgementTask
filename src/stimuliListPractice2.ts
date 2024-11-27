@@ -100,6 +100,7 @@ const stimuliListPractice2 = [
     difficultyLevel: 1,
     language: "fr",
     relation: "unrelated",
-  },]
+  },
+];
 
 export { stimuliListPractice2 };

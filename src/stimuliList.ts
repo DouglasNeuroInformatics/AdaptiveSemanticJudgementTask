@@ -107,18 +107,6 @@ const stimuliList = [
     language: "fr",
     relation: "unrelated",
   },
-  {
-    stimulus: "Paire-1 de Mots-1",
-    difficultyLevel: -1,
-    language: "fr",
-    relation: "unrelated",
-  },
-  {
-    stimulus: "Paire-2 de Mots-2",
-    difficultyLevel: -2,
-    language: "fr",
-    relation: "unrelated",
-  },
 ];
 
 export { stimuliList };
