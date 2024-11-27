@@ -323,6 +323,7 @@ export async function adaptiveSemanticJudgementTask() {
       lang: languageMap[language],
       stimulus: jsPsych.timelineVariable("stimulus"),
       choices: ["related", "unrelated"],
+      time_between_words: 300,
       data: {
         correctResponse: jsPsych.timelineVariable("relation"),
         difficultyLevel: jsPsych.timelineVariable("difficultyLevel"),

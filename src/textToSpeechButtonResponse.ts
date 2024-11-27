@@ -4,7 +4,6 @@ import type { JsPsychPlugin, TrialType } from "/runtime/v1/jspsych@8.x";
 
 import { JsPsych, ParameterType } from "/runtime/v1/jspsych@8.x";
 
-
 const info = {
   name: "text-to-speech-button-response",
   version: version,
@@ -36,7 +35,7 @@ const info = {
      */
     button_html: {
       type: ParameterType.FUNCTION,
-      default: function(choice: string) {
+      default: function (choice: string) {
         return `<button class="jspsych-btn">${choice}</button>`;
       },
     },
@@ -81,6 +80,11 @@ const info = {
     },
     /** How long the button will delay enabling in milliseconds. */
     enable_button_after: {
+      type: ParameterType.INT,
+      default: 0,
+    },
+    /** A pause between words in milliseconds */
+    time_between_words: {
       type: ParameterType.INT,
       default: 0,
     },
@@ -183,14 +187,27 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
     }
 
     // Set up SpeechSytnthesis
-    const utterance = new SpeechSynthesisUtterance(trial.stimulus);
-    utterance.lang = trial.lang;
+    const words = trial.stimulus.split(" ");
+    let currentIndex = 0;
 
     // start time
     const start_time = performance.now();
 
-    // start speechSynthesis
-    speechSynthesis.speak(utterance);
+    function speakNextWord() {
+      if (currentIndex < words.length) {
+        const utterance = new SpeechSynthesisUtterance(words[currentIndex]);
+        utterance.lang = trial.lang;
+
+        utterance.onend = () => {
+          setTimeout(() => {
+            currentIndex++;
+            speakNextWord();
+          }, trial.time_between_words);
+        };
+        speechSynthesis.speak(utterance);
+      }
+    }
+    speakNextWord();
 
     // store response
     const response = {
