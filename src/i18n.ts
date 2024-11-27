@@ -1,10 +1,7 @@
 import { createI18Next } from "/runtime/v1/@opendatacapture/runtime-core";
 
 document.documentElement.setAttribute("lang", "en");
-const languageMap = {
-  en: "en-US",
-  fr: "fr-FR",
-};
+
 const i18n = createI18Next({
   translations: {
     welcome: {
@@ -58,6 +55,39 @@ const i18n = createI18Next({
     continue: {
       en: "Continue",
       fr: "Continuer",
+    },
+
+    setup1: {
+      en: "Before we start, let's get you set up. For the following task, you will need to be able to hear audio on your device",
+      fr: "Avant de commencer, préparons-nous. Pour cette tâche, vous devrez pouvoir entendre l'audio sur votre appareil",
+    },
+    setup2: {
+      en: "Please find a quiet place, free from any background noises. Set your phone to 'Do not disturb mode'",
+      fr: "Veuillez trouver un endroit calme, sans bruits de fond. Mettez votre téléphone en 'mode Ne pas déranger'",
+    },
+    setup3: {
+      en: "Make sure your sound is on and adjust your audio to a comfortable level",
+      fr: "Assurez-vous que le son est activé et réglez votre audio à un niveau confortable",
+    },
+    instructions1: {
+      en: "In this task you will see two words. You must decide whether the two words are RELATED or UNRELATED",
+      fr: "Dans cette tâche, vous verrez deux mots. Vous devez décider si les deux mots sont LIÉS ou NON LIÉS",
+    },
+    instructions2: {
+      en: "You can respond by pressing the buttons on your screen. Please respond as soon as you know the answer",
+      fr: "Vous pouvez répondre en appuyant sur les boutons à l'écran. Veuillez répondre dès que vous connaissez la réponse",
+    },
+    instructions3: {
+      en: "Here are some examples of RELATED words: BLUE RED",
+      fr: "Voici des exemples de mots LIÉS : BLEU ROUGE",
+    },
+    instructions4: {
+      en: "Here are some examples of UNRELATED words: BLUE LIKE. These words are not related",
+      fr: "Voici des exemples de mots NON LIÉS : BLEU AIMER. Ces mots ne sont pas liés",
+    },
+    instructions5: {
+      en: "Let's try some practice rounds. Remember to respond as soon as you know the answer",
+      fr: "Essayons quelques tours de pratique. N'oubliez pas de répondre dès que vous connaissez la réponse",
     },
     task: {
       title: {

@@ -27,6 +27,7 @@ import PureRand, {
   uniformIntDistribution,
   xoroshiro128plus,
 } from "/runtime/v1/pure-rand@6.x";
+import InstructionsPlugin from "@opendatacapture/runtime-v1/@jspsych/plugin-instructions@2.x/index.js";
 
 export async function adaptiveSemanticJudgementTask() {
   //****************************
@@ -237,7 +238,20 @@ export async function adaptiveSemanticJudgementTask() {
       stimulus: i18n.t("welcome"),
       type: HtmlKeyboardResponsePlugin,
     };
-
+    const instructionsUser = {
+      type: InstructionsPlugin,
+      pages: [
+        i18n.t("setup1"),
+        i18n.t("setup2"),
+        i18n.t("setup3"),
+        i18n.t("instructions1"),
+        i18n.t("instructions2"),
+        i18n.t("instructions3"),
+        i18n.t("instructions4"),
+        i18n.t("instructions5"),
+      ],
+      show_clickable_nav: true,
+    };
     const instructions = {
       stimulus: function () {
         const html = `
@@ -432,7 +446,7 @@ export async function adaptiveSemanticJudgementTask() {
 
     void jsPsych.run([
       welcome,
-      instructions,
+      instructionsUser,
       practiceRound1WelcomePage,
       practiceRound1,
       practiceRound2WelcomePage,
