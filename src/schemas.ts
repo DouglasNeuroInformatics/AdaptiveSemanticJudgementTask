@@ -13,6 +13,7 @@ const $Trial = z.object({
 
 export const $WordPairStimulus = z.object({
   stimulus: z.string(),
+  prompt: z.string(),
   difficultyLevel: z.coerce.number().int(),
   language: $Language,
   relation: $Related,
@@ -52,7 +53,6 @@ export const $Settings = z.object({
 export type SupportedLanguage = z.infer<typeof $Language>;
 export type ParticipantResponse = z.infer<typeof $ParticipantResponse>;
 export type Trial = z.infer<typeof $Trial>;
-export type LoggingTrial = z.infer<typeof $LoggingTrial>;
 export type ExperimentResults = z.infer<typeof $ExperimentResults>;
 export type Settings = z.infer<typeof $Settings>;
 export type WordPairStimulus = z.infer<typeof $WordPairStimulus>;

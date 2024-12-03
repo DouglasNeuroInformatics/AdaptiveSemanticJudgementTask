@@ -54,11 +54,6 @@ const info = {
       type: ParameterType.INT,
       default: null,
     },
-    /** How long to wait for the participant to make a response before ending the trial after utternce is finished in milliseconds. If the participant fails to make a response before this timer is reached, the participant's response will be recorded as null for the trial and the trial will end. If the value of this parameter is null, the trial will wait for a response indefinitely.  */
-    trial_duration_after_utterence: {
-      type: ParameterType.INT,
-      default: null,
-    },
     /** Setting to `'grid'` will make the container element have the CSS property `display: grid` and enable the use of `grid_rows` and `grid_columns`. Setting to `'flex'` will make the container element have the CSS property `display: flex`. You can customize how the buttons are laid out by adding inline CSS in the `button_html` parameter. */
     button_layout: {
       type: ParameterType.STRING,
@@ -85,6 +80,11 @@ const info = {
     },
     /** How long the button will delay enabling in milliseconds. */
     enable_button_after: {
+      type: ParameterType.INT,
+      default: 0,
+    },
+    /** A pause between words in milliseconds */
+    time_between_words: {
       type: ParameterType.INT,
       default: 0,
     },
@@ -186,8 +186,28 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
       display_element.insertAdjacentHTML("beforeend", trial.prompt);
     }
 
+    // Set up SpeechSytnthesis
+    const words = trial.stimulus.split(" ");
+    let currentIndex = 0;
+
     // start time
     const start_time = performance.now();
+
+    function speakNextWord() {
+      if (currentIndex < words.length) {
+        const utterance = new SpeechSynthesisUtterance(words[currentIndex]);
+        utterance.lang = trial.lang;
+
+        utterance.onend = () => {
+          setTimeout(() => {
+            currentIndex++;
+            speakNextWord();
+          }, trial.time_between_words);
+        };
+        speechSynthesis.speak(utterance);
+      }
+    }
+    speakNextWord();
 
     // store response
     const response = {
@@ -252,22 +272,6 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
         }
       }, trial.enable_button_after);
     }
-
-    // Set up SpeechSytnthesis
-    const words = trial.stimulus.split(" ");
-
-    function speakNextWord(jspsych) {
-      const utterance = new SpeechSynthesisUtterance(words);
-      utterance.lang = trial.lang;
-
-      speechSynthesis.speak(utterance);
-      if (trial.trial_duration_after_utterence !== null) {
-        utterance.onend = () => {
-          jspsych.pluginAPI.setTimeout(end_trial, trial.trial_duration);
-        };
-      }
-    }
-    speakNextWord(this.jsPsych);
 
     // end trial if time limit is set
     if (trial.trial_duration !== null) {
