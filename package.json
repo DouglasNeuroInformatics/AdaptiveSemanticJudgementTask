@@ -1,5 +1,5 @@
 {
-  "name": "DNP jsPysch Template",
+  "name": "Adaptive Semantic Judgement Task",
   "version": "0.1.0",
   "author": "Cian Monnin",
   "description": "<PLACEHOLDER>",
@@ -22,5 +22,10 @@
     "typescript": "~5.5.4",
     "vite": "^5.4.11"
   },
-  "packageManager": "pnpm@9.1.4"
+  "packageManager": "pnpm@9.1.4",
+  "pnpm": {
+    "overrides": {
+      "marked": "15.0.3"
+    }
+  }
 }

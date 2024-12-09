@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  marked: 15.0.3
+
 importers:
 
   .:
@@ -1079,9 +1082,9 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
-  marked@1.2.9:
-    resolution: {integrity: sha512-H8lIX2SvyitGX+TRdtS06m1jHMijKN/XjfH6Ooii9fvxMlh8QdqBfBDkGUpMWH2kQNrtixjzYUa3SH8ROTgRRw==}
-    engines: {node: '>= 8.16.2'}
+  marked@15.0.3:
+    resolution: {integrity: sha512-Ai0cepvl2NHnTcO9jYDtcOEtVBNVYR31XnEA3BndO7f5As1wzpcOceSUM8FDkNLJNIODcLpDTWay/qQhqbuMvg==}
+    engines: {node: '>= 18'}
     hasBin: true
 
   medium-zoom@1.1.0:
@@ -2027,7 +2030,7 @@ snapshots:
 
   docsify@4.13.1:
     dependencies:
-      marked: 1.2.9
+      marked: 15.0.3
       medium-zoom: 1.1.0
       opencollective-postinstall: 2.0.3
       prismjs: 1.29.0
@@ -2673,7 +2676,7 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
-  marked@1.2.9: {}
+  marked@15.0.3: {}
 
   medium-zoom@1.1.0: {}
 
