@@ -331,6 +331,11 @@ export async function adaptiveSemanticJudgementTask() {
         data.result =
           data.userChoice === data.correctResponse ? "correct" : "incorrect";
       },
+      on_load: function () {
+        document.querySelectorAll(".jspsych-btn").forEach((btn) => {
+          (btn as HTMLElement).style.display = "none";
+        });
+      },
       lang: languageMap[language],
       stimulus: jsPsych.timelineVariable("stimulus"),
       prompt: "",
@@ -350,6 +355,9 @@ export async function adaptiveSemanticJudgementTask() {
         data.result =
           data.userChoice === data.correctResponse ? "correct" : "incorrect";
       },
+      hide_buttons_while_speaking: true,
+      read_stimulus: false,
+      read_prompt: true,
       prompt: jsPsych.timelineVariable("prompt"),
       lang: languageMap[language],
       stimulus: jsPsych.timelineVariable("stimulus"),

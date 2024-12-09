@@ -44,6 +44,18 @@ const info = {
       type: ParameterType.HTML_STRING,
       default: null,
     },
+    read_stimulus: {
+      type: ParameterType.BOOL,
+      default: true,
+    },
+    read_prompt: {
+      type: ParameterType.BOOL,
+      default: false,
+    },
+    hide_buttons_while_speaking: {
+      type: ParameterType.BOOL,
+      default: false,
+    },
     /** How long to display the stimulus in milliseconds. The visibility CSS property of the stimulus will be set to `hidden` after this time has elapsed. If this is null, then the stimulus will remain visible until the trial ends. */
     stimulus_duration: {
       type: ParameterType.INT,
@@ -59,11 +71,11 @@ const info = {
       type: ParameterType.INT,
       default: null,
     },
-    /** Setting to `'grid'` will make the container element have the CSS property `display: grid` and enable the use of `grid_rows` and `grid_columns`. Setting to `'flex'` will make the container element have the CSS property `display: flex`. You can customize how the buttons are laid out by adding inline CSS in the `button_html` parameter. */
-    button_layout: {
-      type: ParameterType.STRING,
-      default: "grid",
-    },
+    /** Setting to `'grid'` will make the container element have the CSS property `display: grid` and enable the use of `grid_rows` and `grid_columns`. Setting to `'flex'` will make the container element have the CSS property `display: flex`. You can customize how the buttons are laid out by adding inline CSS in the `button_html` parameter. */ button_layout:
+      {
+        type: ParameterType.STRING,
+        default: "grid",
+      },
     /**
      * The number of rows in the button grid. Only applicable when `button_layout` is set to `'grid'`. If null, the number of rows will be determined automatically based on the number of buttons and the number of columns.
      */
@@ -143,6 +155,14 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
     stimulusElement.innerHTML = trial.stimulus;
     display_element.appendChild(stimulusElement);
 
+    // Show prompt if there is one
+    if (trial.prompt !== null) {
+      const promptElement = document.createElement("div");
+      promptElement.id = "prompt";
+      promptElement.id = "jspsych-text-to-speech-button-response-prompt";
+      promptElement.innerHTML = trial.prompt;
+      display_element.appendChild(promptElement);
+    }
     // Display buttons
     const buttonGroupElement = document.createElement("div");
     buttonGroupElement.id = "jspsych-text-to-speech-btngroup";
@@ -162,6 +182,9 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
           ? Math.ceil(trial.choices.length / trial.grid_columns)
           : trial.grid_rows;
       buttonGroupElement.style.gridTemplateColumns = `repeat(${n_cols}, 1fr)`;
+      document.querySelectorAll(".jspsych-btn").forEach((btn) => {
+        (btn as HTMLElement).style.display = "none";
+      });
       buttonGroupElement.style.gridTemplateRows = `repeat(${n_rows}, 1fr)`;
     } else if (trial.button_layout === "flex") {
       buttonGroupElement.classList.add("jspsych-btn-group-flex");
@@ -181,9 +204,17 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
 
     display_element.appendChild(buttonGroupElement);
 
-    // Show prompt if there is one
-    if (trial.prompt !== null) {
-      display_element.insertAdjacentHTML("beforeend", trial.prompt);
+    if (trial.hide_buttons_while_speaking === true) {
+      setTimeout(() => {
+        const buttons = buttonGroupElement.querySelectorAll("button");
+        buttons.forEach((btn) => {
+          // make buttons invisible so that text doesn't move around
+          btn.style.setProperty("opacity", "0", "important");
+          // prevents clicking while invisible
+          btn.style.setProperty("pointer-events", "none", "important");
+        });
+        console.log("Buttons are hidden after timeout");
+      }, 0);
     }
 
     // start time
@@ -201,7 +232,6 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
         stimulus: trial.stimulus,
         response: response.button,
       };
-
       // move on to the next trial
       this.jsPsych.finishTrial(trial_data);
     };
@@ -254,18 +284,35 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
     }
 
     // Set up SpeechSytnthesis
-    const words = trial.stimulus.split(" ");
+    let words: string[] = [];
+    console.log("words");
+    console.log(words);
+    if (trial.read_stimulus === true) {
+      console.log("here stim");
+      words.push(trial.stimulus.split(" "));
+    }
+    if (trial.read_prompt) {
+      console.log("here");
+      words.push(trial.prompt.split(" "));
+    }
 
     function speakNextWord(jspsych) {
       const utterance = new SpeechSynthesisUtterance(words);
       utterance.lang = trial.lang;
 
       speechSynthesis.speak(utterance);
-      if (trial.trial_duration_after_utterence !== null) {
-        utterance.onend = () => {
+      utterance.onend = () => {
+        if (trial.hide_buttons_while_speaking) {
+          document.querySelectorAll("button").forEach((btn) => {
+            btn.style.setProperty("opacity", "1", "important");
+            btn.style.setProperty("pointer-events", "auto", "important");
+          });
+        }
+
+        if (trial.trial_duration_after_utterence !== null) {
           jspsych.pluginAPI.setTimeout(end_trial, trial.trial_duration);
-        };
-      }
+        }
+      };
     }
     speakNextWord(this.jsPsych);
 
