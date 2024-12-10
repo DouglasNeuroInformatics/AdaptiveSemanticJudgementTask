@@ -205,16 +205,13 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
     display_element.appendChild(buttonGroupElement);
 
     if (trial.hide_buttons_while_speaking === true) {
-      setTimeout(() => {
-        const buttons = buttonGroupElement.querySelectorAll("button");
-        buttons.forEach((btn) => {
-          // make buttons invisible so that text doesn't move around
-          btn.style.setProperty("opacity", "0", "important");
-          // prevents clicking while invisible
-          btn.style.setProperty("pointer-events", "none", "important");
-        });
-        console.log("Buttons are hidden after timeout");
-      }, 0);
+      const buttons = buttonGroupElement.querySelectorAll("button");
+      buttons.forEach((btn) => {
+        // make buttons invisible so that text doesn't move around
+        btn.style.setProperty("opacity", "0", "important");
+        // prevents clicking while invisible
+        btn.style.setProperty("pointer-events", "none", "important");
+      });
     }
 
     // start time

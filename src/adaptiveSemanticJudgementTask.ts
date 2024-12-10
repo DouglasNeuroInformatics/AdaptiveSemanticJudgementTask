@@ -333,13 +333,19 @@ export async function adaptiveSemanticJudgementTask() {
       },
       on_load: function () {
         document.querySelectorAll(".jspsych-btn").forEach((btn) => {
-          (btn as HTMLElement).style.display = "none";
+          (btn as HTMLElement).style.setProperty("opacity", "0", "important");
         });
+        const element = document.querySelector(
+          "#jspsych-text-to-speech-button-response-prompt",
+        )!;
+        if (element instanceof HTMLElement) {
+          element.style.setProperty("opacity", "0", "important");
+        }
       },
       lang: languageMap[language],
       stimulus: jsPsych.timelineVariable("stimulus"),
-      prompt: "",
-      choices: ["", ""],
+      prompt: ".",
+      choices: [".", "."],
       trial_duration_after_utterence: 300,
       enable_button_after: 400,
 
