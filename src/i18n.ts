@@ -16,6 +16,10 @@ const i18n = createI18Next({
       en: "Practice Round 2",
       fr: "Séance d'entraînement 2",
     },
+    taskBegin: {
+      en: "Press continue to start the task",
+      fr: "Appuyez sur Continuer pour démarrer la tâche",
+    },
     correctResponse: {
       en: "Correct response:",
       fr: "La réponse correcte est:",

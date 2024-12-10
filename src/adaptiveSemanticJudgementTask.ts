@@ -306,6 +306,18 @@ export async function adaptiveSemanticJudgementTask() {
       type: HtmlButtonResponsePlugin,
     };
 
+    const experimentWelcomePage = {
+      on_start: function () {
+        document.addEventListener("click", clickHandler, { once: true });
+      },
+      on_finish: function () {
+        document.removeEventListener("click", clickHandler);
+      },
+      stimulus: i18n.t("taskBegin"),
+      choices: [i18n.t("continue")],
+      type: HtmlButtonResponsePlugin,
+    };
+
     const preload = {
       auto_preload: true,
       message: `<p>loading stimulus</p>`,
@@ -403,6 +415,9 @@ export async function adaptiveSemanticJudgementTask() {
     };
 
     const practiceRound1 = {
+      on_timeline_start: function () {
+        this.timeline_variables = practiceRound1ExperimentStimuli;
+      },
       timeline: [
         preload,
         blankPage,
@@ -416,15 +431,11 @@ export async function adaptiveSemanticJudgementTask() {
     //practiceRound1Timeline.push(practiceRound1);
 
     const practiceRound2 = {
-      on_timeline_start: function () {
-        this.timeline_variables = practiceRound2ExperimentStimuli;
-      },
       timeline: [
         preload,
         blankPage,
         showWordPairOneWord,
         showWordPairTwoWord,
-        showResults,
         blankPage,
       ],
 
@@ -441,13 +452,34 @@ export async function adaptiveSemanticJudgementTask() {
         blankPage,
         showWordPairOneWord,
         showWordPairTwoWord,
-        showResults,
         blankPage,
       ],
       timeline_variables: experimentStimuli,
     };
 
     mainTimeline.push(mainTimelineTestProcedure);
+
+    let practice1Trials = 1;
+    const practice1LoopNode = {
+      timeline: [practiceRound1],
+      loop_function: function () {
+        console.log(practice1Trials);
+        practiceRound1ExperimentStimuli = createStimuli(
+          practice1Trials,
+          language,
+          false,
+          false,
+          wordPairDB,
+        );
+        console.log(practiceRound1ExperimentStimuli);
+        if (practice1Trials === 8) {
+          return false;
+        } else {
+          practice1Trials++;
+          return true;
+        }
+      },
+    };
 
     const loopNode = {
       timeline: mainTimeline,
@@ -500,11 +532,12 @@ export async function adaptiveSemanticJudgementTask() {
 
     void jsPsych.run([
       welcome,
-      // instructionsUser,
-      // practiceRound1WelcomePage,
-      // practiceRound1,
-      // practiceRound2WelcomePage,
-      // practiceRound2,
+      instructionsUser,
+      practiceRound1WelcomePage,
+      practice1LoopNode,
+      practiceRound2WelcomePage,
+      practiceRound2,
+      experimentWelcomePage,
       loopNode,
     ]);
   })();

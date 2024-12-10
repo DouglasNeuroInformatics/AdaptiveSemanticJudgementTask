@@ -1,3 +1,5 @@
+import type { WordPairStimulus } from "./schemas";
+
 const stimuliList = [
   {
     stimulus: "Word",
@@ -125,6 +127,6 @@ const stimuliList = [
     language: "fr",
     relation: "unrelated",
   },
-];
+] as WordPairStimulus[];
 
 export { stimuliList };
