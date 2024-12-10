@@ -16,6 +16,7 @@ import TextToSpeechButtonResponse from "./textToSpeechButtonResponse.ts";
 // import TextToSpeechKeyboardResponsePlugin from "./textToSpeechKeyboardResponse.ts";
 
 import "./styles/instuctions.css";
+import "./styles/resultBoxes.css";
 
 import { HtmlButtonResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-button-response@2.x";
 import { HtmlKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-keyboard-response@2.x";
@@ -367,6 +368,7 @@ export async function adaptiveSemanticJudgementTask() {
       prompt: jsPsych.timelineVariable("prompt"),
       lang: languageMap[language],
       stimulus: jsPsych.timelineVariable("stimulus"),
+      trial_duration_after_utterence: 7000,
       choices: ["related", "unrelated"],
       data: {
         correctResponse: jsPsych.timelineVariable("relation"),
@@ -375,25 +377,26 @@ export async function adaptiveSemanticJudgementTask() {
     };
 
     const showResults = {
-      type: HtmlButtonResponsePlugin,
+      type: HtmlKeyboardResponsePlugin,
       stimulus: function () {
         // Get data from the last trial
         const lastTrial = jsPsych.data
           .get()
           .last(1)
           .values()[0] as WordPairTrial;
-
-        return `
-      <div class="results-display">
-        <h2>Results from previous trial:</h2>
-        <p>Your response: ${lastTrial.response}</p>
-        <p>Was: ${lastTrial.result}</p>
-        <br>
-        <p>Press any key to continue</p>
-      </div>
-    `;
+        if (lastTrial.result === "correct") {
+          return `
+            <div class="results-display correct-box">
+            <h2> Correct!</h2>
+            </div>`;
+        } else {
+          return `
+            <div class="results-display incorrect-box">
+            <h2> Incorrect!</h2>
+            </div>`;
+        }
       },
-      choices: [i18n.t("continue")],
+      trial_duration: 1000,
       data: {
         task: "feedback",
       },

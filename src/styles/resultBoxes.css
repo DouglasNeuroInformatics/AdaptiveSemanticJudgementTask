@@ -1,0 +1,18 @@
+.results-display.correct-box {
+  background-color: #c6f4d6;
+  padding: 20px;
+  border: 1px solid #3e8e41;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: #2f4f2f;
+}
+.results-display.incorrect-box {
+  background-color: #f7c6c6;
+  padding: 20px;
+  border: 1px solid #ff6c6c;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: #8b0a1a;
+}

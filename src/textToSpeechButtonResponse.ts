@@ -282,14 +282,10 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
 
     // Set up SpeechSytnthesis
     let words: string[] = [];
-    console.log("words");
-    console.log(words);
     if (trial.read_stimulus === true) {
-      console.log("here stim");
       words.push(trial.stimulus.split(" "));
     }
     if (trial.read_prompt) {
-      console.log("here");
       words.push(trial.prompt.split(" "));
     }
 
@@ -307,7 +303,10 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
         }
 
         if (trial.trial_duration_after_utterence !== null) {
-          jspsych.pluginAPI.setTimeout(end_trial, trial.trial_duration);
+          jspsych.pluginAPI.setTimeout(
+            end_trial,
+            trial.trial_duration_after_utterence,
+          );
         }
       };
     }
