@@ -40,7 +40,7 @@ export async function adaptiveSemanticJudgementTask() {
   let numberOfTrialsRun = 1;
   let settingsParseResult;
   let totalNumberOfTrialsToRun = 8;
-  let relationResults = []
+  let relationResults: string[] = []
 
   // languageMap for mapping speech dispatcher language to
   // experiment language. If more languages are added the
@@ -156,24 +156,45 @@ export async function adaptiveSemanticJudgementTask() {
     clearSet: boolean,
     random: boolean,
     wordPairDB: WordPairStimulus[],
+    relation?: 'related' | 'unrelated',
   ): WordPairStimulus[] {
+
     if (clearSet === true) {
       indiciesSelected.clear();
     }
-    let wordPairList: WordPairStimulus[] = wordPairDB.filter(
-      (wordPair) =>
-        wordPair.difficultyLevel === difficultyLevel &&
-        wordPair.language === language,
-    );
+    let wordPairList: WordPairStimulus[] = [];
+
+    if (relation) {
+      wordPairList = wordPairDB.filter((wordPair) => {
+        return wordPair.difficultyLevel === difficultyLevel &&
+          wordPair.language === language &&
+          wordPair.relation === relation;
+      });
+    } else {
+      wordPairList = wordPairDB.filter((wordPair) => {
+        return wordPair.difficultyLevel === difficultyLevel &&
+          wordPair.language === language;
+      });
+    }
+
     // if array is empty clear the set and try again
     if (wordPairList.length === 0) {
       indiciesSelected.clear();
-      wordPairList = wordPairDB.filter(
-        (wordPair) =>
-          wordPair.difficultyLevel === difficultyLevel &&
-          wordPair.language === language,
-      );
+
+      if (relation) {
+        wordPairList = wordPairDB.filter((wordPair) => {
+          return wordPair.difficultyLevel === difficultyLevel &&
+            wordPair.language === language &&
+            wordPair.relation === relation;
+        });
+      } else {
+        wordPairList = wordPairDB.filter((wordPair) => {
+          return wordPair.difficultyLevel === difficultyLevel &&
+            wordPair.language === language;
+        });
+      }
     }
+
     let result;
     if (random) {
       result = getRandomElementWithSeed(wordPairList);
@@ -526,9 +547,6 @@ export async function adaptiveSemanticJudgementTask() {
         const lastTrialIndex = resultArray.length - 1;
         const lastTrialResults: WordPairTrial = resultArray[lastTrialIndex]!;
 
-        if (relationResults.length < 2) {
-          relationResults.push(lastTrialResults.relation)
-        }
 
 
         if (lastTrialResults.result === "correct") {
@@ -550,13 +568,29 @@ export async function adaptiveSemanticJudgementTask() {
             currentDifficultyLevel--;
           }
         }
-        experimentStimuli = createStimuli(
-          currentDifficultyLevel,
-          language,
-          clearSet,
-          true,
-          wordPairDB,
-        );
+        // don't want 3 of the same answer in a row
+        if (relationResults.length < 2 || relationResults[relationResults.length - 1] !== relationResults[relationResults.length - 2]) {
+          relationResults.push(lastTrialResults.relation)
+          experimentStimuli = createStimuli(
+            currentDifficultyLevel,
+            language,
+            clearSet,
+            true,
+            wordPairDB,
+          );
+        } else {
+          relationResults.push(lastTrialResults.relation)
+          const relation = relationResults[relationResults.length - 1] === 'related' ? 'unrelated' : 'related'
+          experimentStimuli = createStimuli(
+            currentDifficultyLevel,
+            language,
+            clearSet,
+            true,
+            wordPairDB,
+            relation,
+          );
+
+        }
         numberOfTrialsRun++;
         return true;
       },
