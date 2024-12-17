@@ -19,6 +19,7 @@ import InstructionsPlugin from "@opendatacapture/runtime-v1/@jspsych/plugin-inst
 
 import "./styles/instuctions.css";
 import "./styles/resultBoxes.css";
+import "./styles/wordPair.css"
 
 import { HtmlButtonResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-button-response@2.x";
 import { HtmlKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-keyboard-response@2.x";
