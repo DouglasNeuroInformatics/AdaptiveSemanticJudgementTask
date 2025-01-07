@@ -1,6 +1,11 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { version } from "../package.json";
+=======
+// @ts-nocheck
+// import { version } from "../package.json";
+>>>>>>> Stashed changes
 =======
 // @ts-nocheck
 // import { version } from "../package.json";
