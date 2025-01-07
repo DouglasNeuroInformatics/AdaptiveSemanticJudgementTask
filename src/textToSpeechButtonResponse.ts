@@ -1,26 +1,11 @@
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-import { version } from "../package.json";
-=======
 // @ts-nocheck
 // import { version } from "../package.json";
->>>>>>> Stashed changes
-=======
-// @ts-nocheck
-// import { version } from "../package.json";
->>>>>>> Stashed changes
-=======
-// @ts-nocheck
-// import { version } from "../package.json";
->>>>>>> Stashed changes
 
 import type { JsPsychPlugin, TrialType } from "/runtime/v1/jspsych@8.x";
 
 import { JsPsych, ParameterType } from "/runtime/v1/jspsych@8.x";
 
-
-const version = 1.0
+const version = 1.0;
 const info = {
   name: "text-to-speech-button-response",
   version: version,
