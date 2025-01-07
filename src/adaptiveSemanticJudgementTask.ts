@@ -1,4 +1,4 @@
-import type { Language } from "@opendatacapture/runtime-v1/@opendatacapture/runtime-core/index.js";
+import type { Language } from "/runtime/v1/@opendatacapture/runtime-core/index.js";
 
 import { consoleLogData, transformAndExportJson } from "./dataMunger.ts";
 import { experimentSettingsJson } from "./experimentSettings.ts";
@@ -15,11 +15,11 @@ import { stimuliListPractice2 } from "./stimuliListPractice2.ts";
 import TextToSpeechButtonResponse from "./textToSpeechButtonResponse.ts";
 // import TextToSpeechKeyboardResponsePlugin from "./textToSpeechKeyboardResponse.ts";
 
-import InstructionsPlugin from "@opendatacapture/runtime-v1/@jspsych/plugin-instructions@2.x/index.js";
+import InstructionsPlugin from "/runtime/v1/@jspsych/plugin-instructions@2.x";
 
-import "./styles/instuctions.css";
-import "./styles/resultBoxes.css";
-import "./styles/wordPair.css"
+import "./instuctions.css";
+import "./resultBoxes.css";
+import "./wordPair.css";
 
 import { HtmlButtonResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-button-response@2.x";
 import { HtmlKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-keyboard-response@2.x";
@@ -41,7 +41,7 @@ export async function adaptiveSemanticJudgementTask() {
   let numberOfTrialsRun = 1;
   let settingsParseResult;
   let totalNumberOfTrialsToRun = 8;
-  let relationResults: string[] = []
+  let relationResults: string[] = [];
 
   // languageMap for mapping speech dispatcher language to
   // experiment language. If more languages are added the
@@ -101,7 +101,7 @@ export async function adaptiveSemanticJudgementTask() {
 
   // small hack to get around i18n issues with wait for changeLanguage
   i18n.changeLanguage(language as Language);
-  await new Promise(function(resolve) {
+  await new Promise(function (resolve) {
     i18n.onLanguageChange = resolve;
   });
 
@@ -157,9 +157,8 @@ export async function adaptiveSemanticJudgementTask() {
     clearSet: boolean,
     random: boolean,
     wordPairDB: WordPairStimulus[],
-    relation?: 'related' | 'unrelated',
+    relation?: "related" | "unrelated",
   ): WordPairStimulus[] {
-
     if (clearSet === true) {
       indiciesSelected.clear();
     }
@@ -167,14 +166,18 @@ export async function adaptiveSemanticJudgementTask() {
 
     if (relation) {
       wordPairList = wordPairDB.filter((wordPair) => {
-        return wordPair.difficultyLevel === difficultyLevel &&
+        return (
+          wordPair.difficultyLevel === difficultyLevel &&
           wordPair.language === language &&
-          wordPair.relation === relation;
+          wordPair.relation === relation
+        );
       });
     } else {
       wordPairList = wordPairDB.filter((wordPair) => {
-        return wordPair.difficultyLevel === difficultyLevel &&
-          wordPair.language === language;
+        return (
+          wordPair.difficultyLevel === difficultyLevel &&
+          wordPair.language === language
+        );
       });
     }
 
@@ -184,14 +187,18 @@ export async function adaptiveSemanticJudgementTask() {
 
       if (relation) {
         wordPairList = wordPairDB.filter((wordPair) => {
-          return wordPair.difficultyLevel === difficultyLevel &&
+          return (
+            wordPair.difficultyLevel === difficultyLevel &&
             wordPair.language === language &&
-            wordPair.relation === relation;
+            wordPair.relation === relation
+          );
         });
       } else {
         wordPairList = wordPairDB.filter((wordPair) => {
-          return wordPair.difficultyLevel === difficultyLevel &&
-            wordPair.language === language;
+          return (
+            wordPair.difficultyLevel === difficultyLevel &&
+            wordPair.language === language
+          );
         });
       }
     }
@@ -219,7 +226,7 @@ export async function adaptiveSemanticJudgementTask() {
 
   const mainTimeline: any[] = [];
 
-  (function() {
+  (function () {
     let experimentStimuli = createStimuli(
       initialDifficulty,
       language,
@@ -243,7 +250,7 @@ export async function adaptiveSemanticJudgementTask() {
       wordPairDBPractice2,
     );
     const jsPsych = initJsPsych({
-      on_finish: function() {
+      on_finish: function () {
         const data = jsPsych.data.get();
         transformAndExportJson(data);
         consoleLogData(data, "text-to-speech-button-response");
@@ -252,10 +259,10 @@ export async function adaptiveSemanticJudgementTask() {
     // clickHandler to simulateKeyPress on touchscreen
     const clickHandler = () => simulateKeyPress(jsPsych, "a");
     const welcome = {
-      on_start: function() {
+      on_start: function () {
         document.addEventListener("click", clickHandler, { once: true });
       },
-      on_finish: function() {
+      on_finish: function () {
         document.removeEventListener("click", clickHandler);
       },
       stimulus: i18n.t("welcome"),
@@ -308,10 +315,10 @@ export async function adaptiveSemanticJudgementTask() {
     //   type: HtmlButtonResponsePlugin,
     // };
     const practiceRound1WelcomePage = {
-      on_start: function() {
+      on_start: function () {
         document.addEventListener("click", clickHandler, { once: true });
       },
-      on_finish: function() {
+      on_finish: function () {
         document.removeEventListener("click", clickHandler);
       },
       stimulus: i18n.t("practiceRound1Welcome"),
@@ -320,10 +327,10 @@ export async function adaptiveSemanticJudgementTask() {
     };
 
     const practiceRound2WelcomePage = {
-      on_start: function() {
+      on_start: function () {
         document.addEventListener("click", clickHandler, { once: true });
       },
-      on_finish: function() {
+      on_finish: function () {
         document.removeEventListener("click", clickHandler);
       },
       stimulus: i18n.t("practiceRound2Welcome"),
@@ -332,10 +339,10 @@ export async function adaptiveSemanticJudgementTask() {
     };
 
     const experimentWelcomePage = {
-      on_start: function() {
+      on_start: function () {
         document.addEventListener("click", clickHandler, { once: true });
       },
-      on_finish: function() {
+      on_finish: function () {
         document.removeEventListener("click", clickHandler);
       },
       stimulus: i18n.t("taskBegin"),
@@ -351,10 +358,10 @@ export async function adaptiveSemanticJudgementTask() {
     };
 
     const blankPage = {
-      on_start: function() {
+      on_start: function () {
         document.addEventListener("click", clickHandler, { once: true });
       },
-      on_finish: function() {
+      on_finish: function () {
         document.removeEventListener("click", clickHandler);
       },
       stimulus: "",
@@ -364,12 +371,12 @@ export async function adaptiveSemanticJudgementTask() {
 
     const showWordPairOneWord = {
       type: TextToSpeechButtonResponse,
-      on_finish: function(data: WordPairTrial) {
+      on_finish: function (data: WordPairTrial) {
         data.userChoice = data.response === 0 ? "related" : "unrelated";
         data.result =
           data.userChoice === data.correctResponse ? "correct" : "incorrect";
       },
-      on_load: function() {
+      on_load: function () {
         document.querySelectorAll(".jspsych-btn").forEach((btn) => {
           (btn as HTMLElement).style.setProperty("opacity", "0", "important");
         });
@@ -394,7 +401,7 @@ export async function adaptiveSemanticJudgementTask() {
     };
     const showWordPairTwoWord = {
       type: TextToSpeechButtonResponse,
-      on_finish: function(data: WordPairTrial) {
+      on_finish: function (data: WordPairTrial) {
         data.userChoice = data.response === 0 ? "related" : "unrelated";
         data.result =
           data.userChoice === data.correctResponse ? "correct" : "incorrect";
@@ -415,7 +422,7 @@ export async function adaptiveSemanticJudgementTask() {
 
     const showResults = {
       type: HtmlKeyboardResponsePlugin,
-      stimulus: function() {
+      stimulus: function () {
         // Get data from the last trial
         const lastTrial = jsPsych.data
           .get()
@@ -440,7 +447,7 @@ export async function adaptiveSemanticJudgementTask() {
     };
 
     const practiceRound1 = {
-      on_timeline_start: function() {
+      on_timeline_start: function () {
         this.timeline_variables = practiceRound1ExperimentStimuli;
       },
       timeline: [
@@ -455,30 +462,20 @@ export async function adaptiveSemanticJudgementTask() {
     //practiceRound1Timeline.push(practiceRound1);
 
     const practiceRound2 = {
-      on_timeline_start: function() {
+      on_timeline_start: function () {
         this.timeline_variables = practiceRound2ExperimentStimuli;
       },
-      timeline: [
-        preload,
-        blankPage,
-        showWordPairOneWord,
-        showWordPairTwoWord,
-      ],
+      timeline: [preload, blankPage, showWordPairOneWord, showWordPairTwoWord],
 
       timeline_variables: practiceRound2ExperimentStimuli,
     };
 
     const mainTimelineTestProcedure = {
       // to reload the experimentStimuli after one repetition has been completed
-      on_timeline_start: function() {
+      on_timeline_start: function () {
         this.timeline_variables = experimentStimuli;
       },
-      timeline: [
-        preload,
-        blankPage,
-        showWordPairOneWord,
-        showWordPairTwoWord,
-      ],
+      timeline: [preload, blankPage, showWordPairOneWord, showWordPairTwoWord],
       timeline_variables: experimentStimuli,
     };
 
@@ -488,7 +485,7 @@ export async function adaptiveSemanticJudgementTask() {
     let practice1Trials = 2;
     const practice1LoopNode = {
       timeline: [practiceRound1],
-      loop_function: function() {
+      loop_function: function () {
         practiceRound1ExperimentStimuli = createStimuli(
           practice1Trials,
           language,
@@ -511,7 +508,7 @@ export async function adaptiveSemanticJudgementTask() {
     let practice2Trials = 2;
     const practice2LoopNode = {
       timeline: [practiceRound2],
-      loop_function: function() {
+      loop_function: function () {
         practiceRound2ExperimentStimuli = createStimuli(
           practice2Trials,
           language,
@@ -532,7 +529,7 @@ export async function adaptiveSemanticJudgementTask() {
 
     const loopNode = {
       timeline: mainTimeline,
-      loop_function: function() {
+      loop_function: function () {
         // tracking number of corret answers
         // need to access logging trial info
         let clearSet = false;
@@ -547,8 +544,6 @@ export async function adaptiveSemanticJudgementTask() {
           .values() as WordPairTrial[];
         const lastTrialIndex = resultArray.length - 1;
         const lastTrialResults: WordPairTrial = resultArray[lastTrialIndex]!;
-
-
 
         if (lastTrialResults.result === "correct") {
           numberOfCorrectAnswers++;
@@ -570,8 +565,12 @@ export async function adaptiveSemanticJudgementTask() {
           }
         }
         // don't want 3 of the same answer in a row
-        if (relationResults.length < 2 || relationResults[relationResults.length - 1] !== relationResults[relationResults.length - 2]) {
-          relationResults.push(lastTrialResults.relation)
+        if (
+          relationResults.length < 2 ||
+          relationResults[relationResults.length - 1] !==
+            relationResults[relationResults.length - 2]
+        ) {
+          relationResults.push(lastTrialResults.relation);
           experimentStimuli = createStimuli(
             currentDifficultyLevel,
             language,
@@ -580,8 +579,11 @@ export async function adaptiveSemanticJudgementTask() {
             wordPairDB,
           );
         } else {
-          relationResults.push(lastTrialResults.relation)
-          const relation = relationResults[relationResults.length - 1] === 'related' ? 'unrelated' : 'related'
+          relationResults.push(lastTrialResults.relation);
+          const relation =
+            relationResults[relationResults.length - 1] === "related"
+              ? "unrelated"
+              : "related";
           experimentStimuli = createStimuli(
             currentDifficultyLevel,
             language,
@@ -590,7 +592,6 @@ export async function adaptiveSemanticJudgementTask() {
             wordPairDB,
             relation,
           );
-
         }
         numberOfTrialsRun++;
         return true;
