@@ -371,11 +371,6 @@ export async function adaptiveSemanticJudgementTask() {
 
     const showWordPairOneWord = {
       type: TextToSpeechButtonResponse,
-      on_finish: function (data: WordPairTrial) {
-        data.userChoice = data.response === 0 ? "related" : "unrelated";
-        data.result =
-          data.userChoice === data.correctResponse ? "correct" : "incorrect";
-      },
       on_load: function () {
         document.querySelectorAll(".jspsych-btn").forEach((btn) => {
           (btn as HTMLElement).style.setProperty("opacity", "0", "important");
@@ -393,7 +388,6 @@ export async function adaptiveSemanticJudgementTask() {
       choices: [".", "."],
       trial_duration_after_utterence: 300,
       enable_button_after: 400,
-
       data: {
         correctResponse: jsPsych.timelineVariable("relation"),
         difficultyLevel: jsPsych.timelineVariable("difficultyLevel"),
@@ -402,9 +396,14 @@ export async function adaptiveSemanticJudgementTask() {
     const showWordPairTwoWord = {
       type: TextToSpeechButtonResponse,
       on_finish: function (data: WordPairTrial) {
-        data.userChoice = data.response === 0 ? "related" : "unrelated";
-        data.result =
-          data.userChoice === data.correctResponse ? "correct" : "incorrect";
+        if (data.response != null) {
+          data.userChoice = data.response === 0 ? "related" : "unrelated";
+          data.result =
+            data.userChoice === data.correctResponse ? "correct" : "incorrect";
+        } else {
+          data.userChoice = "timeout";
+          data.result = "incorrect";
+        }
       },
       hide_buttons_while_speaking: true,
       read_stimulus: false,

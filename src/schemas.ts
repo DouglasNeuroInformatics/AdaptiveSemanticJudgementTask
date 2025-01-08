@@ -21,7 +21,7 @@ export const $WordPairStimulus = z.object({
 
 const $WordPairTrial = $Trial.extend({
   ...$WordPairStimulus.shape,
-  userChoice: z.enum(["related", "unrelated"]),
+  userChoice: z.enum(["related", "unrelated", "timeout"]),
   result: z.enum(["correct", "incorrect"]),
   response: z.coerce.number().int(),
   correctResponse: z.enum(["related", "unrelated"]),

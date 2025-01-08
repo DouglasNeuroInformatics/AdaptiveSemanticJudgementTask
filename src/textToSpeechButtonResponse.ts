@@ -226,6 +226,8 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
     };
 
     const end_trial = () => {
+      if (response.button != null) {
+      }
       const trial_data = {
         rt: response.rt,
         stimulus: trial.stimulus,
