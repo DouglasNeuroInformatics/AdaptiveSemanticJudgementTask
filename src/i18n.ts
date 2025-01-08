@@ -62,7 +62,7 @@ const i18n = createI18Next({
     },
 
     setup1: {
-      en: "Before we start, let's get you set up. For the following task, you will need to be able to hear audio on your device",
+      en: "Before we start, let's get you set up. For the following task, you will need to be able to hear audio on your device.",
       fr: "Avant de commencer, préparons-nous. Pour cette tâche, vous devrez pouvoir entendre l'audio sur votre appareil",
     },
     setup2: {

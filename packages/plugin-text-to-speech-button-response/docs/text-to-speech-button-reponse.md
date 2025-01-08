@@ -35,11 +35,11 @@ Using the JavaScript file downloaded from a GitHub release dist archive:
 Using NPM:
 
 ```
-npm install @jspsych-contrib/plugin-text-to-speech-button
+npm install @jspsych-contrib/plugin-text-to-speech-button-response
 ```
 
 ```js
-import TextToSpeechButtonResponse from '@jspsych-contrib/plugin-text-to-speech-button-response';
+import TextToSpeechButtonResponse from "@jspsych-contrib/plugin-text-to-speech-button-response";
 ```
 
 ## Examples
@@ -48,7 +48,6 @@ import TextToSpeechButtonResponse from '@jspsych-contrib/plugin-text-to-speech-b
 
 ```javascript
 var trial = {
-  type: jsPsychTextToSpeechButtonResponse
-}
+  type: jsPsychTextToSpeechButtonResponse,
+};
 ```
-

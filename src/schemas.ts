@@ -57,4 +57,3 @@ export type ExperimentResults = z.infer<typeof $ExperimentResults>;
 export type Settings = z.infer<typeof $Settings>;
 export type WordPairStimulus = z.infer<typeof $WordPairStimulus>;
 export type WordPairTrial = z.infer<typeof $WordPairTrial>;
-//export type ResultType = WordPairTrial['result']
