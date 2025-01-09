@@ -41,7 +41,7 @@ export async function adaptiveSemanticJudgementTask() {
   let numberOfIncorrectAnswers = 0;
   let numberOfTrialsRun = 1;
   let settingsParseResult;
-  let totalNumberOfTrialsToRun = 1;
+  let totalNumberOfTrialsToRun = 8;
   let relationResults: string[] = [];
 
   // languageMap for mapping speech dispatcher language to

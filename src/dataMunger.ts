@@ -73,8 +73,6 @@ function getLocalTime() {
 function exportToJsonSerializable(data: ExperimentResults[]): {
   [key: string]: unknown;
 } {
-  console.log("for odc");
-  console.log(data);
   return {
     version: "1.0",
     timestamp: getLocalTime(),
