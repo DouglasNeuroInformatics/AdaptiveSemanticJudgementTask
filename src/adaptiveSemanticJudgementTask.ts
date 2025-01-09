@@ -1,6 +1,6 @@
 import type { Language } from "/runtime/v1/@opendatacapture/runtime-core/index.js";
 
-import { consoleLogData, transformAndExportJson } from "./dataMunger.ts";
+import { transformAndExportJson } from "./dataMunger.ts";
 import { experimentSettingsJson } from "./experimentSettings.ts";
 import i18n from "./i18n.ts";
 import {
@@ -38,6 +38,7 @@ export async function adaptiveSemanticJudgementTask() {
   //****************************
 
   let numberOfCorrectAnswers = 0;
+  let numberOfIncorrectAnswers = 0;
   let numberOfTrialsRun = 1;
   let settingsParseResult;
   let totalNumberOfTrialsToRun = 8;
@@ -253,7 +254,6 @@ export async function adaptiveSemanticJudgementTask() {
       on_finish: function () {
         const data = jsPsych.data.get();
         transformAndExportJson(data);
-        consoleLogData(data, "text-to-speech-button-response");
       },
     });
     // clickHandler to simulateKeyPress on touchscreen
@@ -282,38 +282,6 @@ export async function adaptiveSemanticJudgementTask() {
       ],
       show_clickable_nav: true,
     };
-    // const instructions = {
-    //   stimulus: function () {
-    //     const html = `
-    //       <div class="instructions-container">
-    //        <div class="instructions-content">
-    //         <h1>${i18n.t("task.title")}</h1>
-    //
-    //          <div class="instructions-intro">
-    //           <p>${i18n.t("task.intro")}</p>
-    //          </div>
-    //
-    //         <ul class="instructions-steps">
-    //           <li class="instructions-step">${i18n.t("task.step1")}</li>
-    //           <li class="instructions-step">${i18n.t("task.step2")}</li>
-    //           <li class="instructions-step">${i18n.t("task.step3")}</li>
-    //           <li class="instructions-step">${i18n.t("task.step4")}</li>
-    //           <li class="instructions-step">${i18n.t("task.step5")}</li>
-    //           <li class="instructions-step">${i18n.t("task.step6")}</li>
-    //           <li class="instructions-step">${i18n.t("task.step7")}</li>
-    //         </ul>
-    //
-    //         <div class="instructions-completion">
-    //           <p>${i18n.t("task.completion")}</p>
-    //         </div>
-    //       </div>
-    //     </div>
-    //     `;
-    //     return html;
-    //   },
-    //   choices: [i18n.t("continue")],
-    //   type: HtmlButtonResponsePlugin,
-    // };
     const practiceRound1WelcomePage = {
       on_start: function () {
         document.addEventListener("click", clickHandler, { once: true });
@@ -371,11 +339,6 @@ export async function adaptiveSemanticJudgementTask() {
 
     const showWordPairOneWord = {
       type: TextToSpeechButtonResponse,
-      on_finish: function (data: WordPairTrial) {
-        data.userChoice = data.response === 0 ? "related" : "unrelated";
-        data.result =
-          data.userChoice === data.correctResponse ? "correct" : "incorrect";
-      },
       on_load: function () {
         document.querySelectorAll(".jspsych-btn").forEach((btn) => {
           (btn as HTMLElement).style.setProperty("opacity", "0", "important");
@@ -393,7 +356,6 @@ export async function adaptiveSemanticJudgementTask() {
       choices: [".", "."],
       trial_duration_after_utterence: 300,
       enable_button_after: 400,
-
       data: {
         correctResponse: jsPsych.timelineVariable("relation"),
         difficultyLevel: jsPsych.timelineVariable("difficultyLevel"),
@@ -402,9 +364,14 @@ export async function adaptiveSemanticJudgementTask() {
     const showWordPairTwoWord = {
       type: TextToSpeechButtonResponse,
       on_finish: function (data: WordPairTrial) {
-        data.userChoice = data.response === 0 ? "related" : "unrelated";
-        data.result =
-          data.userChoice === data.correctResponse ? "correct" : "incorrect";
+        if (data.response != null) {
+          data.userChoice = data.response === 0 ? "related" : "unrelated";
+          data.result =
+            data.userChoice === data.correctResponse ? "correct" : "incorrect";
+        } else {
+          data.userChoice = "timeout";
+          data.result = "incorrect";
+        }
       },
       hide_buttons_while_speaking: true,
       read_stimulus: false,
@@ -415,6 +382,8 @@ export async function adaptiveSemanticJudgementTask() {
       trial_duration_after_utterence: 7000,
       choices: ["related", "unrelated"],
       data: {
+        language: language,
+        prompt: jsPsych.timelineVariable("prompt"),
         correctResponse: jsPsych.timelineVariable("relation"),
         difficultyLevel: jsPsych.timelineVariable("difficultyLevel"),
       },
@@ -547,8 +516,10 @@ export async function adaptiveSemanticJudgementTask() {
 
         if (lastTrialResults.result === "correct") {
           numberOfCorrectAnswers++;
+          numberOfIncorrectAnswers = 0;
           clearSet = false;
         } else if (lastTrialResults.result === "incorrect") {
+          numberOfIncorrectAnswers++;
           numberOfCorrectAnswers = 0;
         }
         // difficulty level logic, <x> correct answers in a row, increase, <y> incorrect answer decrease
@@ -559,7 +530,7 @@ export async function adaptiveSemanticJudgementTask() {
             numberOfCorrectAnswers = 0;
             clearSet = true;
           }
-        } else if (numberOfCorrectAnswers === regressionSchedule) {
+        } else if (numberOfIncorrectAnswers === regressionSchedule) {
           if (currentDifficultyLevel > 1) {
             currentDifficultyLevel--;
           }

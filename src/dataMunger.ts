@@ -5,32 +5,35 @@ import type { DataCollection } from "/runtime/v1/jspsych@8.x";
 
 function dataMunger(data: DataCollection) {
   const trials = data
-    .filter({ trial_type: "text-to-speech-button-response" })
+    .filterCustom((trial) => {
+      return (
+        trial.trial_type === "text-to-speech-button-response" &&
+        (trial.result === "correct" || trial.result === "incorrect")
+      );
+    })
     .values() as WordPairTrial[];
   const experimentResults: ExperimentResults[] = [];
   for (let trial of trials) {
     const result = $ExperimentResults.parse({
+      language: trial.language,
+      // not required for further processing
+      relation: trial.correctResponse,
+      // not required for further processing
+      responseResult: trial.result,
+      prompt: trial.prompt,
       stimulus: trial.stimulus,
       correctResponse: trial.correctResponse,
       response: trial.response,
       difficultyLevel: trial.difficultyLevel,
-      language: trial.language,
       rt: trial.rt,
       userChoice: trial.userChoice,
+      result: trial.result,
     });
     experimentResults.push(result);
   }
-
   return experimentResults;
 }
 
-export function consoleLogData(data: DataCollection, trial_type?: string) {
-  if (trial_type) {
-    console.table(data.filter({ trial_type: trial_type }).values());
-  } else {
-    console.table(data.values());
-  }
-}
 // not used
 function arrayToCSV(array: ExperimentResults[]) {
   const header = Object.keys(array[0]!).join(",");
@@ -74,7 +77,7 @@ function exportToJsonSerializable(data: ExperimentResults[]): {
     version: "1.0",
     timestamp: getLocalTime(),
     experimentResults: data.map((result) => ({
-      stimulus: result.stimulus,
+      word_pair: result.stimulus + result.prompt,
       correctResponse: result.correctResponse,
       response: result.response,
       userChoice: result.userChoice,
