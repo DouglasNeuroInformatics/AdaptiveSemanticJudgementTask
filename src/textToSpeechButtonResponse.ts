@@ -1,11 +1,14 @@
-// @ts-nocheck
 // import { version } from "../package.json";
 
-import type { JsPsychPlugin, TrialType } from "/runtime/v1/jspsych@8.x";
+import type {
+  JsPsychPlugin,
+  PluginInfo,
+  TrialType,
+} from "/runtime/v1/jspsych@8.x";
 
 import { JsPsych, ParameterType } from "/runtime/v1/jspsych@8.x";
 
-const version = 1.0;
+const version = "1.0";
 const info = {
   name: "text-to-speech-button-response",
   version: version,
@@ -117,7 +120,7 @@ const info = {
       type: ParameterType.HTML_STRING,
     },
   },
-};
+} satisfies PluginInfo;
 
 type Info = typeof info;
 /**
@@ -135,21 +138,6 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
     this.jsPsych = jsPsych;
   }
 
-  simulate(
-    trial: TrialType<Info>,
-    simulation_mode,
-    simulation_options: any,
-    load_callback: () => void,
-  ) {
-    if (simulation_mode == "data-only") {
-      load_callback();
-      this.simulate_data_only(trial, simulation_options);
-    }
-    if (simulation_mode == "visual") {
-      this.simulate_visual(trial, simulation_options, load_callback);
-    }
-  }
-
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
     // Display stimulus
     const stimulusElement = document.createElement("div");
@@ -158,7 +146,7 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
     display_element.appendChild(stimulusElement);
 
     // Show prompt if there is one
-    if (trial.prompt !== null) {
+    if (trial.prompt) {
       const promptElement = document.createElement("div");
       promptElement.id = "prompt";
       promptElement.id = "jspsych-text-to-speech-button-response-prompt";
@@ -179,6 +167,7 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
         trial.grid_columns === null
           ? Math.ceil(trial.choices.length / trial.grid_rows)
           : trial.grid_columns;
+
       const n_rows =
         trial.grid_rows === null
           ? Math.ceil(trial.choices.length / trial.grid_columns)
@@ -192,10 +181,19 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
       buttonGroupElement.classList.add("jspsych-btn-group-flex");
     }
 
+    for (let index = 0; index < trial.choices.length; index++) {
+      const choice = trial.choices[index]!
+
+      buttonGroupElement.insertAdjacentHTML(
+        "beforeend",
+        trial.button_html!(choice, index),
+      );
+    }
+    
     for (const [choiceIndex, choice] of trial.choices.entries()) {
       buttonGroupElement.insertAdjacentHTML(
         "beforeend",
-        trial.button_html(choice, choiceIndex),
+        trial.button_html!(choice, choiceIndex),
       );
       const buttonElement = buttonGroupElement.lastChild as HTMLElement;
       buttonElement.dataset.choice = choiceIndex.toString();
@@ -317,56 +315,6 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
     // end trial if time limit is set
     if (trial.trial_duration !== null) {
       this.jsPsych.pluginAPI.setTimeout(end_trial, trial.trial_duration);
-    }
-  }
-
-  private create_simulation_data(trial: TrialType<Info>, simulation_options) {
-    const default_data = {
-      stimulus: trial.stimulus,
-      rt:
-        this.jsPsych.randomization.sampleExGaussian(500, 50, 1 / 150, true) +
-        trial.enable_button_after,
-      response: this.jsPsych.randomization.randomInt(
-        0,
-        trial.choices.length - 1,
-      ),
-    };
-
-    const data = this.jsPsych.pluginAPI.mergeSimulationData(
-      default_data,
-      simulation_options,
-    );
-
-    this.jsPsych.pluginAPI.ensureSimulationDataConsistency(trial, data);
-
-    return data;
-  }
-
-  private simulate_data_only(trial: TrialType<Info>, simulation_options) {
-    const data = this.create_simulation_data(trial, simulation_options);
-
-    this.jsPsych.finishTrial(data);
-  }
-
-  private simulate_visual(
-    trial: TrialType<Info>,
-    simulation_options,
-    load_callback: () => void,
-  ) {
-    const data = this.create_simulation_data(trial, simulation_options);
-
-    const display_element = this.jsPsych.getDisplayElement();
-
-    this.trial(display_element, trial);
-    load_callback();
-
-    if (data.rt !== null) {
-      this.jsPsych.pluginAPI.clickTarget(
-        display_element.querySelector(
-          `#jspsych-text-to-speech-btngroup [data-choice="${data.response}"]`,
-        ),
-        data.rt,
-      );
     }
   }
 }

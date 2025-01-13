@@ -1,12 +1,13 @@
 {
-  "name": "Adaptive Semantic Judgement Task",
-  "version": "0.1.0",
-  "author": "Cian Monnin",
-  "description": "This task shows word pairs and uses speech synthesis to read them out. The participant then has to decide if the words are related or unrelated",
+  "name": "adaptive-semantic-judgement-task",
   "type": "module",
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.1.4",
+  "description": "This task shows word pairs and uses speech synthesis to read them out. The participant then has to decide if the words are related or unrelated",
+  "author": "Cian Monnin",
   "scripts": {
-    "dev": "vite",
     "build": "tsc && vite build",
+    "dev": "vite",
     "lint": "tsc && eslint --fix src",
     "preview": "vite preview"
   },
@@ -15,14 +16,13 @@
     "docsify": "^4.13.1"
   },
   "devDependencies": {
-    "@douglasneuroinformatics/eslint-config": "^4.3.1",
-    "@douglasneuroinformatics/tsconfig": "^1.0.2",
+    "@douglasneuroinformatics/eslint-config": "^5.2.4",
+    "@douglasneuroinformatics/tsconfig":"^1.0.2",
     "@types/node": "^20.17.8",
-    "eslint": "^8.57.1",
+    "eslint": "^9.17.0",
     "typescript": "~5.5.4",
     "vite": "^5.4.11"
   },
-  "packageManager": "pnpm@9.1.4",
   "pnpm": {
     "overrides": {
       "marked": "15.0.3"
