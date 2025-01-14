@@ -5,7 +5,7 @@ import type { DataCollection } from "/runtime/v1/jspsych@8.x";
 
 function dataMunger(data: DataCollection) {
   const trials = data
-    .filterCustom((trial) => {
+    .filterCustom((trial: WordPairTrial) => {
       return (
         trial.trial_type === "text-to-speech-button-response" &&
         (trial.result === "correct" || trial.result === "incorrect")
