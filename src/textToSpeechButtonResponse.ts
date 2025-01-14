@@ -295,6 +295,10 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
       const text = words.join(" ");
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = trial.lang ?? "en-US";
+      setTimeout(() => {
+        console.log("speechSynthesis");
+        console.log(speechSynthesis);
+      }, 300);
       speechSynthesis.speak(utterance);
       utterance.onend = () => {
         if (trial.hide_buttons_while_speaking) {
