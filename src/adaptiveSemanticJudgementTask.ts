@@ -354,7 +354,7 @@ export async function adaptiveSemanticJudgementTask() {
       stimulus: jsPsych.timelineVariable("stimulus"),
       prompt: ".",
       choices: [".", "."],
-      trial_duration_after_utterence: 300,
+      trial_duration_after_utterance: 300,
       enable_button_after: 400,
       data: {
         correctResponse: jsPsych.timelineVariable("relation"),
@@ -379,7 +379,7 @@ export async function adaptiveSemanticJudgementTask() {
       prompt: jsPsych.timelineVariable("prompt"),
       lang: languageMap[language],
       stimulus: jsPsych.timelineVariable("stimulus"),
-      trial_duration_after_utterence: 7000,
+      trial_duration_after_utterance: 7000,
       choices: ["related", "unrelated"],
       data: {
         language: language,
