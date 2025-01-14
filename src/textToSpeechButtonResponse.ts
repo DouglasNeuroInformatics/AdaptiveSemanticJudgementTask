@@ -304,7 +304,10 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
           });
         }
 
-        if (trial.trial_duration_after_utterance !== null) {
+        if (
+          trial.trial_duration_after_utterance !== null &&
+          trial.trial_duration_after_utterance !== undefined
+        ) {
           jspsych.pluginAPI.setTimeout(
             end_trial,
             trial.trial_duration_after_utterance,
