@@ -8,7 +8,7 @@ const $ParticipantResponse = z.object({
   result: z.string(),
 });
 const $Trial = z.object({
-  trialType: z.string(),
+  trial_type: z.string(),
 });
 
 export const $WordPairStimulus = z.object({
@@ -29,7 +29,7 @@ const $WordPairTrial = $Trial.extend({
 });
 
 export const $ExperimentResults = $WordPairTrial
-  .omit({ trialType: true })
+  .omit({ trial_type: true })
   .extend({
     responseResult: z.string(),
   });

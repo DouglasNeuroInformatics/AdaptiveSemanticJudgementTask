@@ -32,7 +32,9 @@ import PureRand, {
   xoroshiro128plus,
 } from "/runtime/v1/pure-rand@6.x";
 
-export async function adaptiveSemanticJudgementTask() {
+export async function adaptiveSemanticJudgementTask(
+  onFinish?: (data: any) => void,
+) {
   //****************************
   //****EXPERIMENT_SETTINGS*****
   //****************************
@@ -40,9 +42,9 @@ export async function adaptiveSemanticJudgementTask() {
   let numberOfCorrectAnswers = 0;
   let numberOfIncorrectAnswers = 0;
   let numberOfTrialsRun = 1;
-  let settingsParseResult;
-  let totalNumberOfTrialsToRun = 8;
-  let relationResults: string[] = [];
+  const totalNumberOfTrialsToRun = 8;
+  const relationResults: string[] = [];
+  const settingsParseResult = $Settings.safeParse(experimentSettingsJson);
 
   // languageMap for mapping speech dispatcher language to
   // experiment language. If more languages are added the
@@ -52,7 +54,6 @@ export async function adaptiveSemanticJudgementTask() {
     fr: "fr-FR",
   };
   // parse settings
-  settingsParseResult = $Settings.safeParse(experimentSettingsJson);
 
   if (!settingsParseResult.success) {
     throw new Error("validation error, check experiment settings", {
@@ -253,7 +254,9 @@ export async function adaptiveSemanticJudgementTask() {
     const jsPsych = initJsPsych({
       on_finish: function () {
         const data = jsPsych.data.get();
-        transformAndExportJson(data);
+        if (onFinish) {
+          onFinish(transformAndExportJson(data, numberOfTrialsRun));
+        }
       },
     });
     // clickHandler to simulateKeyPress on touchscreen
@@ -354,7 +357,7 @@ export async function adaptiveSemanticJudgementTask() {
       stimulus: jsPsych.timelineVariable("stimulus"),
       prompt: ".",
       choices: [".", "."],
-      trial_duration_after_utterence: 300,
+      trial_duration_after_utterance: 300,
       enable_button_after: 400,
       data: {
         correctResponse: jsPsych.timelineVariable("relation"),
@@ -379,7 +382,7 @@ export async function adaptiveSemanticJudgementTask() {
       prompt: jsPsych.timelineVariable("prompt"),
       lang: languageMap[language],
       stimulus: jsPsych.timelineVariable("stimulus"),
-      trial_duration_after_utterence: 7000,
+      trial_duration_after_utterance: 7000,
       choices: ["related", "unrelated"],
       data: {
         language: language,
@@ -502,6 +505,8 @@ export async function adaptiveSemanticJudgementTask() {
         // tracking number of corret answers
         // need to access logging trial info
         let clearSet = false;
+
+        // exit out of loop if number of correct number of trials has been run
         if (numberOfTrialsRun === totalNumberOfTrialsToRun) {
           return false;
         }
@@ -513,7 +518,6 @@ export async function adaptiveSemanticJudgementTask() {
           .values() as WordPairTrial[];
         const lastTrialIndex = resultArray.length - 1;
         const lastTrialResults: WordPairTrial = resultArray[lastTrialIndex]!;
-
         if (lastTrialResults.result === "correct") {
           numberOfCorrectAnswers++;
           numberOfIncorrectAnswers = 0;
@@ -536,12 +540,17 @@ export async function adaptiveSemanticJudgementTask() {
           }
         }
         // don't want 3 of the same answer in a row
+        // so check that the last two are not the same
         if (
           relationResults.length < 2 ||
-          relationResults[relationResults.length - 1] !==
-            relationResults[relationResults.length - 2]
+          !(
+            relationResults[relationResults.length - 1] ===
+              relationResults[relationResults.length - 2] &&
+            relationResults[relationResults.length - 1] ===
+              lastTrialResults.correctResponse
+          )
         ) {
-          relationResults.push(lastTrialResults.relation);
+          relationResults.push(lastTrialResults.correctResponse);
           experimentStimuli = createStimuli(
             currentDifficultyLevel,
             language,
@@ -550,7 +559,7 @@ export async function adaptiveSemanticJudgementTask() {
             wordPairDB,
           );
         } else {
-          relationResults.push(lastTrialResults.relation);
+          relationResults.push(lastTrialResults.correctResponse);
           const relation =
             relationResults[relationResults.length - 1] === "related"
               ? "unrelated"
@@ -565,6 +574,7 @@ export async function adaptiveSemanticJudgementTask() {
           );
         }
         numberOfTrialsRun++;
+        // keep looping
         return true;
       },
     };
