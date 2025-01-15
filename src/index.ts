@@ -5,7 +5,6 @@ import "/runtime/v1/jspsych@8.x/css/jspsych.css";
 const { defineInstrument } = await import(
   "/runtime/v1/@opendatacapture/runtime-core/index.js"
 );
-const { z } = await import("/runtime/v1/zod@3.23.x/index.js");
 
 export default defineInstrument({
   kind: "INTERACTIVE",
@@ -22,7 +21,7 @@ export default defineInstrument({
   },
   details: {
     description:
-      "Displays and reads aloud two words to the participant. The participant then has to determine if the words are relatd or unrelated",
+      "Displays and reads aloud two words to the participant. The participant then has to determine if the words are related or unrelated",
     estimatedDuration: 5,
     instructions: ["<PLACEHOLDER>"],
     license: "UNLICENSED",
