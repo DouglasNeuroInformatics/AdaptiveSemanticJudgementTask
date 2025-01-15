@@ -580,13 +580,13 @@ export async function adaptiveSemanticJudgementTask(
     };
 
     void jsPsych.run([
-      // welcome,
-      // instructionsUser,
-      // practiceRound1WelcomePage,
-      // practice1LoopNode,
-      // practiceRound2WelcomePage,
-      // practice2LoopNode,
-      // experimentWelcomePage,
+      welcome,
+      instructionsUser,
+      practiceRound1WelcomePage,
+      practice1LoopNode,
+      practiceRound2WelcomePage,
+      practice2LoopNode,
+      experimentWelcomePage,
       loopNode,
     ]);
   })();
