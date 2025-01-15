@@ -43,7 +43,7 @@ export async function adaptiveSemanticJudgementTask(
   let numberOfIncorrectAnswers = 0;
   let numberOfTrialsRun = 1;
   let settingsParseResult;
-  let totalNumberOfTrialsToRun = 8;
+  const totalNumberOfTrialsToRun = 8;
   let relationResults: string[] = [];
 
   // languageMap for mapping speech dispatcher language to
@@ -256,7 +256,7 @@ export async function adaptiveSemanticJudgementTask(
       on_finish: function () {
         const data = jsPsych.data.get();
         if (onFinish) {
-          onFinish(transformAndExportJson(data));
+          onFinish(transformAndExportJson(data, numberOfTrialsRun));
         }
       },
     });

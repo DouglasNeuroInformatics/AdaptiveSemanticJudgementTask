@@ -3,7 +3,7 @@ import { $ExperimentResults } from "./schemas.ts";
 import type { ExperimentResults, WordPairTrial } from "./schemas.ts";
 import type { DataCollection } from "/runtime/v1/jspsych@8.x";
 
-function dataMunger(data: DataCollection) {
+function dataMunger(data: DataCollection, numberOfTrialsToRun: number) {
   const trials = data
     .filterCustom((trial: WordPairTrial) => {
       return (
@@ -31,7 +31,9 @@ function dataMunger(data: DataCollection) {
     });
     experimentResults.push(result);
   }
-  return experimentResults;
+  const arrayLength = experimentResults.length;
+  const indexToSlice = arrayLength - numberOfTrialsToRun;
+  return experimentResults.slice(indexToSlice);
 }
 
 // not used
@@ -88,15 +90,20 @@ function exportToJsonSerializable(data: ExperimentResults[]): {
   };
 }
 
-export function transformAndDownload(data: DataCollection) {
-  const mungedData = dataMunger(data);
+export function transformAndDownload(
+  data: DataCollection,
+  numberOfTrialsToRun: number,
+) {
+  const mungedData = dataMunger(data, numberOfTrialsToRun);
   const dataForCSV = arrayToCSV(mungedData);
   const currentDate = getLocalTime();
   downloadCSV(dataForCSV, `${currentDate}.csv`);
 }
-export function transformAndExportJson(data: DataCollection): any {
-  const mungedData = dataMunger(data);
+export function transformAndExportJson(
+  data: DataCollection,
+  numberOfTrialsToRun: number,
+): any {
+  const mungedData = dataMunger(data, numberOfTrialsToRun);
   const jsonSerializableData = exportToJsonSerializable(mungedData);
-  console.log(JSON.parse(JSON.stringify(jsonSerializableData)));
   return JSON.parse(JSON.stringify(jsonSerializableData));
 }
