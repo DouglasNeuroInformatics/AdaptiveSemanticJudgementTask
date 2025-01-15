@@ -295,10 +295,10 @@ class TextToSpeechButtonResponse implements JsPsychPlugin<Info> {
       const text = words.join(" ");
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = trial.lang ?? "en-US";
-      setTimeout(() => {
-        console.log("speechSynthesis");
-        console.log(speechSynthesis);
-      }, 300);
+      // chrome has a bug where after a certain (unknown) amount of time the speechSynthesis stops work
+      // issues as old as 10 years ago (2014) have reported a workaround.
+      // This workaround is call .cancel() before each .speak()
+      speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
       utterance.onend = () => {
         if (trial.hide_buttons_while_speaking) {

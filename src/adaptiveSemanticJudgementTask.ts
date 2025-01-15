@@ -32,7 +32,9 @@ import PureRand, {
   xoroshiro128plus,
 } from "/runtime/v1/pure-rand@6.x";
 
-export async function adaptiveSemanticJudgementTask() {
+export async function adaptiveSemanticJudgementTask(
+  onFinish?: (data: any) => void,
+) {
   //****************************
   //****EXPERIMENT_SETTINGS*****
   //****************************
@@ -253,7 +255,9 @@ export async function adaptiveSemanticJudgementTask() {
     const jsPsych = initJsPsych({
       on_finish: function () {
         const data = jsPsych.data.get();
-        transformAndExportJson(data);
+        if (onFinish) {
+          onFinish(transformAndExportJson(data));
+        }
       },
     });
     // clickHandler to simulateKeyPress on touchscreen

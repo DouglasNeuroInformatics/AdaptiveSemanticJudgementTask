@@ -97,5 +97,6 @@ export function transformAndDownload(data: DataCollection) {
 export function transformAndExportJson(data: DataCollection): any {
   const mungedData = dataMunger(data);
   const jsonSerializableData = exportToJsonSerializable(mungedData);
+  console.log(JSON.parse(JSON.stringify(jsonSerializableData)));
   return JSON.parse(JSON.stringify(jsonSerializableData));
 }
