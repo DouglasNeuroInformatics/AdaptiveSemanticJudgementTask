@@ -2,7 +2,7 @@ import type { Language } from "/runtime/v1/@opendatacapture/runtime-core/index.j
 
 import { transformAndExportJson } from "./dataMunger.ts";
 import { experimentSettingsJson } from "./experimentSettings.ts";
-import i18n from "./i18n.ts";
+import i18nSetUp from "./i18n.ts";
 import {
   $Settings,
   $WordPairStimulus,
@@ -12,21 +12,13 @@ import {
 import { stimuliList } from "./stimuliList.ts";
 import { stimuliListPractice1 } from "./stimuliListPractice1.ts";
 import { stimuliListPractice2 } from "./stimuliListPractice2.ts";
-import TextToSpeechButtonResponse from "./textToSpeechButtonResponse.ts";
+import pluginCreator from "./textToSpeechButtonResponse.ts";
 // import TextToSpeechKeyboardResponsePlugin from "./textToSpeechKeyboardResponse.ts";
-
-import InstructionsPlugin from "/runtime/v1/@jspsych/plugin-instructions@2.x";
 
 import "./instuctions.css";
 import "./resultBoxes.css";
 import "./wordPair.css";
 
-import { HtmlButtonResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-button-response@2.x";
-import { HtmlKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-html-keyboard-response@2.x";
-// import { ImageKeyboardResponsePlugin } from "/runtime/v1/@jspsych/plugin-image-keyboard-response@2.x";
-import { PreloadPlugin } from "/runtime/v1/@jspsych/plugin-preload@2.x";
-import { initJsPsych } from "/runtime/v1/jspsych@8.x";
-import { JsPsych } from "/runtime/v1/jspsych@8.x";
 import PureRand, {
   uniformIntDistribution,
   xoroshiro128plus,
@@ -35,6 +27,25 @@ import PureRand, {
 export async function adaptiveSemanticJudgementTask(
   onFinish?: (data: any) => void,
 ) {
+  // need to do dynamic imports to satisfy ODC instrument bundler
+  const { HtmlButtonResponsePlugin } = await import(
+    "/runtime/v1/@jspsych/plugin-html-button-response@2.x"
+  );
+  const { default: InstructionsPlugin } = await import(
+    "/runtime/v1/@jspsych/plugin-instructions@2.x"
+  );
+  const { HtmlKeyboardResponsePlugin } = await import(
+    "/runtime/v1/@jspsych/plugin-html-keyboard-response@2.x"
+  );
+  const { PreloadPlugin } = await import(
+    "/runtime/v1/@jspsych/plugin-preload@2.x"
+  );
+  const { initJsPsych } = await import("/runtime/v1/jspsych@8.x");
+  const { JsPsych } = await import("/runtime/v1/jspsych@8.x");
+  const TextToSpeechButtonResponse = await pluginCreator();
+
+  const i18n = i18nSetUp();
+
   //****************************
   //****EXPERIMENT_SETTINGS*****
   //****************************
@@ -102,10 +113,10 @@ export async function adaptiveSemanticJudgementTask(
   }
 
   // small hack to get around i18n issues with wait for changeLanguage
-  i18n.changeLanguage(language as Language);
-  await new Promise(function (resolve) {
-    i18n.onLanguageChange = resolve;
-  });
+  // i18n.changeLanguage(language as Language);
+  // await new Promise(function (resolve) {
+  //   i18n.onLanguageChange = resolve;
+  // });
 
   /*
   functions for generating
