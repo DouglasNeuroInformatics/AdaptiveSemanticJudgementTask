@@ -29,19 +29,19 @@ export async function adaptiveSemanticJudgementTask(
 ) {
   // need to do dynamic imports to satisfy ODC instrument bundler
   const { HtmlButtonResponsePlugin } = await import(
-    "/runtime/v1/@jspsych/plugin-html-button-response@2.x"
+    "/runtime/v1/@jspsych/plugin-html-button-response@2.x/index.js"
   );
   const { default: InstructionsPlugin } = await import(
-    "/runtime/v1/@jspsych/plugin-instructions@2.x"
+    "/runtime/v1/@jspsych/plugin-instructions@2.x/index.js"
   );
   const { HtmlKeyboardResponsePlugin } = await import(
-    "/runtime/v1/@jspsych/plugin-html-keyboard-response@2.x"
+    "/runtime/v1/@jspsych/plugin-html-keyboard-response@2.x/index.js"
   );
   const { PreloadPlugin } = await import(
-    "/runtime/v1/@jspsych/plugin-preload@2.x"
+    "/runtime/v1/@jspsych/plugin-preload@2.x/index.js"
   );
-  const { initJsPsych } = await import("/runtime/v1/jspsych@8.x");
-  const { JsPsych } = await import("/runtime/v1/jspsych@8.x");
+  const { initJsPsych } = await import("/runtime/v1/jspsych@8.x/index.js");
+  const { JsPsych } = await import("/runtime/v1/jspsych@8.x/index.js");
   const TextToSpeechButtonResponse = await pluginCreator();
 
   const i18n = i18nSetUp();
