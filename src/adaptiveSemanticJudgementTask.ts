@@ -13,7 +13,6 @@ import { stimuliList } from "./stimuliList.ts";
 import { stimuliListPractice1 } from "./stimuliListPractice1.ts";
 import { stimuliListPractice2 } from "./stimuliListPractice2.ts";
 import pluginCreator from "./textToSpeechButtonResponse.ts";
-// import TextToSpeechKeyboardResponsePlugin from "./textToSpeechKeyboardResponse.ts";
 
 import "./instuctions.css";
 import "./resultBoxes.css";
@@ -41,10 +40,16 @@ export async function adaptiveSemanticJudgementTask(
     "/runtime/v1/@jspsych/plugin-preload@2.x/index.js"
   );
   const { initJsPsych } = await import("/runtime/v1/jspsych@8.x/index.js");
-  const { JsPsych } = await import("/runtime/v1/jspsych@8.x/index.js");
+  type JsPsych = import("/runtime/v1/jspsych@8.x/index.js").JsPsych;
   const TextToSpeechButtonResponse = await pluginCreator();
 
   const i18n = i18nSetUp();
+
+  // needed to set the language of the experiment later
+  document.addEventListener("changeLanguage", function (event) {
+    // @ts-expect-error the event does have a detail
+    document.documentElement.setAttribute("lang", event.detail as string);
+  });
 
   //****************************
   //****EXPERIMENT_SETTINGS*****
@@ -64,8 +69,8 @@ export async function adaptiveSemanticJudgementTask(
     en: "en-US",
     fr: "fr-FR",
   };
-  // parse settings
 
+  // parse settings
   if (!settingsParseResult.success) {
     throw new Error("validation error, check experiment settings", {
       cause: settingsParseResult.error,
@@ -112,11 +117,12 @@ export async function adaptiveSemanticJudgementTask(
     seed = settingsParseResult.data.seed;
   }
 
-  // small hack to get around i18n issues with wait for changeLanguage
-  // i18n.changeLanguage(language as Language);
-  // await new Promise(function (resolve) {
-  //   i18n.onLanguageChange = resolve;
-  // });
+  //  small hack to get around i18n issues with wait for changeLanguage
+  //  set language correctly according to language parameter
+  i18n.changeLanguage(language as Language);
+  await new Promise(function (resolve) {
+    i18n.onLanguageChange = resolve;
+  });
 
   /*
   functions for generating
