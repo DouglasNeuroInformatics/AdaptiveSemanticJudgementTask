@@ -1,6 +1,5 @@
 import { adaptiveSemanticJudgementTask } from "./adaptiveSemanticJudgementTask.ts";
 import { $ExperimentResults } from "./schemas.ts";
-
 import "/runtime/v1/jspsych@8.x/css/jspsych.css";
 const { defineInstrument } = await import(
   "/runtime/v1/@opendatacapture/runtime-core/index.js"
