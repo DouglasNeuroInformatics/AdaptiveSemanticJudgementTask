@@ -17,7 +17,7 @@ import type {
  */
 
 async function pluginCreator() {
-  const { JsPsych, ParameterType } = await import("/runtime/v1/jspsych@8.x");
+  const { ParameterType } = await import("/runtime/v1/jspsych@8.x/index.js");
 
   const version = "1.0";
   const info = {

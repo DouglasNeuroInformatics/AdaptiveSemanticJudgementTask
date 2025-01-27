@@ -1,7 +1,5 @@
 import { createI18Next } from "/runtime/v1/@opendatacapture/runtime-core";
-
 export default function i18nSetUp() {
-  document.documentElement.setAttribute("lang", "en");
   const i18n = createI18Next({
     translations: {
       welcome: {
@@ -147,11 +145,3 @@ export default function i18nSetUp() {
   });
   return i18n;
 }
-
-// export function changeLanguage(language) {
-//   // the whole i18n implementation needs to be changed
-//   document.addEventListener("changeLanguage", function (event) {
-//     // @ts-expect-error the event does have a detail
-//     document.documentElement.setAttribute("lang", event.detail as string);
-//   });
-// }

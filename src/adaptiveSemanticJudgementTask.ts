@@ -43,14 +43,6 @@ export async function adaptiveSemanticJudgementTask(
   type JsPsych = import("/runtime/v1/jspsych@8.x/index.js").JsPsych;
   const TextToSpeechButtonResponse = await pluginCreator();
 
-  const i18n = i18nSetUp();
-
-  // needed to set the language of the experiment later
-  document.addEventListener("changeLanguage", function (event) {
-    // @ts-expect-error the event does have a detail
-    document.documentElement.setAttribute("lang", event.detail as string);
-  });
-
   //****************************
   //****EXPERIMENT_SETTINGS*****
   //****************************
@@ -112,17 +104,28 @@ export async function adaptiveSemanticJudgementTask(
     initialDifficulty,
   } = settingsParseResult.data;
 
+  document.addEventListener("changeLanguage", function (event) {
+    // @ts-expect-error the event does have a detail
+    document.documentElement.setAttribute("lang", event.detail as string);
+  });
+  const i18n = i18nSetUp();
+
+  // small hack to get around i18n issues with wait for changeLanguage
+  console.log("Changing language");
+  i18n.changeLanguage(language as Language);
+  await new Promise(function (resolve, reject) {
+    console.log("waiting");
+    i18n.onLanguageChange = resolve;
+    setTimeout(reject, 5000); // handle potential hanging
+  }).catch((error) => {
+    console.error("Language change error: ", error);
+  });
+  console.log("done waiting");
+
   let seed: number | undefined;
   if (typeof settingsParseResult.data.seed === "number") {
     seed = settingsParseResult.data.seed;
   }
-
-  //  small hack to get around i18n issues with wait for changeLanguage
-  //  set language correctly according to language parameter
-  i18n.changeLanguage(language as Language);
-  await new Promise(function (resolve) {
-    i18n.onLanguageChange = resolve;
-  });
 
   /*
   functions for generating
