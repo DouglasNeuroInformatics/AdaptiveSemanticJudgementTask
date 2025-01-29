@@ -50,6 +50,16 @@ export const $Settings = z.object({
   ),
 });
 
+export const $ODCExport = z.object({
+  word_pair: z.string(),
+  correctResponse: z.enum(["related", "unrelated"]),
+  response: z.number(),
+  userChoice: z.enum(["related", "unrelated"]),
+  difficultyLevel: z.number(),
+  language: z.string(),
+  rt: z.number(),
+});
+
 export type SupportedLanguage = z.infer<typeof $Language>;
 export type ParticipantResponse = z.infer<typeof $ParticipantResponse>;
 export type Trial = z.infer<typeof $Trial>;
@@ -57,3 +67,4 @@ export type ExperimentResults = z.infer<typeof $ExperimentResults>;
 export type Settings = z.infer<typeof $Settings>;
 export type WordPairStimulus = z.infer<typeof $WordPairStimulus>;
 export type WordPairTrial = z.infer<typeof $WordPairTrial>;
+export type ODCExport = z.infer<typeof $ODCExport>;

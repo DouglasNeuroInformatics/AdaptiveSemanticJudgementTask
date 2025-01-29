@@ -1,8 +1,10 @@
-import type { Language } from "/runtime/v1/@opendatacapture/runtime-core/index.js";
+import PureRand, {
+  uniformIntDistribution,
+  xoroshiro128plus,
+} from "/runtime/v1/pure-rand@6.x";
 
 import { transformAndExportJson } from "./dataMunger.ts";
 import { experimentSettingsJson } from "./experimentSettings.ts";
-import i18nSetUp from "./i18n.ts";
 import {
   $Settings,
   $WordPairStimulus,
@@ -13,15 +15,11 @@ import { stimuliList } from "./stimuliList.ts";
 import { stimuliListPractice1 } from "./stimuliListPractice1.ts";
 import { stimuliListPractice2 } from "./stimuliListPractice2.ts";
 import pluginCreator from "./textToSpeechButtonResponse.ts";
+import { translator } from "./translator.ts";
 
 import "./instuctions.css";
 import "./resultBoxes.css";
 import "./wordPair.css";
-
-import PureRand, {
-  uniformIntDistribution,
-  xoroshiro128plus,
-} from "/runtime/v1/pure-rand@6.x";
 
 export async function adaptiveSemanticJudgementTask(
   onFinish?: (data: any) => void,
@@ -68,7 +66,6 @@ export async function adaptiveSemanticJudgementTask(
       cause: settingsParseResult.error,
     });
   }
-
   // parse stimuli lists
   function validateStimuliList(
     data: WordPairStimulus[],
@@ -103,24 +100,6 @@ export async function adaptiveSemanticJudgementTask(
     numberOfLevels,
     initialDifficulty,
   } = settingsParseResult.data;
-
-  document.addEventListener("changeLanguage", function (event) {
-    // @ts-expect-error the event does have a detail
-    document.documentElement.setAttribute("lang", event.detail as string);
-  });
-  const i18n = i18nSetUp();
-
-  // small hack to get around i18n issues with wait for changeLanguage
-  console.log("Changing language");
-  i18n.changeLanguage(language as Language);
-  await new Promise(function (resolve, reject) {
-    console.log("waiting");
-    i18n.onLanguageChange = resolve;
-    setTimeout(reject, 5000); // handle potential hanging
-  }).catch((error) => {
-    console.error("Language change error: ", error);
-  });
-  console.log("done waiting");
 
   let seed: number | undefined;
   if (typeof settingsParseResult.data.seed === "number") {
@@ -288,20 +267,20 @@ export async function adaptiveSemanticJudgementTask(
       on_finish: function () {
         document.removeEventListener("click", clickHandler);
       },
-      stimulus: i18n.t("welcome"),
+      stimulus: translator.t("welcome"),
       type: HtmlKeyboardResponsePlugin,
     };
     const instructionsUser = {
       type: InstructionsPlugin,
       pages: [
-        i18n.t("setup1"),
-        i18n.t("setup2"),
-        i18n.t("setup3"),
-        i18n.t("instructions1"),
-        i18n.t("instructions2"),
-        i18n.t("instructions3"),
-        i18n.t("instructions4"),
-        i18n.t("instructions5"),
+        translator.t("setup1"),
+        translator.t("setup2"),
+        translator.t("setup3"),
+        translator.t("instructions1"),
+        translator.t("instructions2"),
+        translator.t("instructions3"),
+        translator.t("instructions4"),
+        translator.t("instructions5"),
       ],
       show_clickable_nav: true,
     };
@@ -312,8 +291,8 @@ export async function adaptiveSemanticJudgementTask(
       on_finish: function () {
         document.removeEventListener("click", clickHandler);
       },
-      stimulus: i18n.t("practiceRound1Welcome"),
-      choices: [i18n.t("continue")],
+      stimulus: translator.t("practiceRound1Welcome"),
+      choices: [translator.t("continue")],
       type: HtmlButtonResponsePlugin,
     };
 
@@ -324,8 +303,8 @@ export async function adaptiveSemanticJudgementTask(
       on_finish: function () {
         document.removeEventListener("click", clickHandler);
       },
-      stimulus: i18n.t("practiceRound2Welcome"),
-      choices: [i18n.t("continue")],
+      stimulus: translator.t("practiceRound2Welcome"),
+      choices: [translator.t("continue")],
       type: HtmlButtonResponsePlugin,
     };
 
@@ -336,8 +315,8 @@ export async function adaptiveSemanticJudgementTask(
       on_finish: function () {
         document.removeEventListener("click", clickHandler);
       },
-      stimulus: i18n.t("taskBegin"),
-      choices: [i18n.t("continue")],
+      stimulus: translator.t("taskBegin"),
+      choices: [translator.t("continue")],
       type: HtmlButtonResponsePlugin,
     };
 
@@ -356,7 +335,7 @@ export async function adaptiveSemanticJudgementTask(
         document.removeEventListener("click", clickHandler);
       },
       stimulus: "",
-      choices: [i18n.t("continue")],
+      choices: [translator.t("continue")],
       type: HtmlButtonResponsePlugin,
     };
 

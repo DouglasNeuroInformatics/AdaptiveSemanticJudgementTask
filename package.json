@@ -12,12 +12,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@opendatacapture/runtime-v1": "^1.6.1",
+    "@opendatacapture/runtime-v1": "^1.6.3",
     "docsify": "^4.13.1"
   },
   "devDependencies": {
     "@douglasneuroinformatics/eslint-config": "^5.2.4",
-    "@douglasneuroinformatics/tsconfig":"^1.0.2",
+    "@douglasneuroinformatics/tsconfig": "^1.0.2",
     "@types/node": "^20.17.8",
     "eslint": "^9.17.0",
     "typescript": "~5.5.4",
