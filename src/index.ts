@@ -2,7 +2,7 @@ import type { Language } from "/runtime/v1/@opendatacapture/runtime-core";
 
 import { adaptiveSemanticJudgementTask } from "./adaptiveSemanticJudgementTask.ts";
 import { experimentSettingsJson } from "./experimentSettings.ts";
-import { $ExperimentResults, $ODCExport, $Settings } from "./schemas.ts";
+import { $ODCExport, $Settings } from "./schemas.ts";
 import { translator } from "./translator.ts";
 import { z } from "/runtime/v1/zod@3.23.x";
 import "/runtime/v1/jspsych@8.x/css/jspsych.css";

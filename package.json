@@ -12,7 +12,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@opendatacapture/runtime-v1": "^1.6.3",
+    "@opendatacapture/runtime-v1": "^1.8.0",
     "docsify": "^4.13.1"
   },
   "devDependencies": {

@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@opendatacapture/runtime-v1':
-        specifier: ^1.6.3
-        version: 1.6.3
+        specifier: ^1.8.0
+        version: 1.8.0
       docsify:
         specifier: ^4.13.1
         version: 4.13.1
@@ -267,8 +267,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@opendatacapture/runtime-v1@1.6.3':
-    resolution: {integrity: sha512-cXdlYzYodEt+ibszPPS0CMogF0MV4XCDCeSZw3gRA8VJOluQhZgc+H8TjrCQVR0YIkD1nBV+l1HZwl+SEQlsoA==}
+  '@opendatacapture/runtime-v1@1.8.0':
+    resolution: {integrity: sha512-cgVxgi1oZ906llCP+R6cuMtiBLkvHtZlSDmkEOAwlrRXf9ZvFcfp/IGSpIwTmpC7IZUWHuzbjgrJH6mbiu8sWw==}
 
   '@pkgr/core@0.1.1':
     resolution: {integrity: sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==}
@@ -1726,7 +1726,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
-  '@opendatacapture/runtime-v1@1.6.3': {}
+  '@opendatacapture/runtime-v1@1.8.0': {}
 
   '@pkgr/core@0.1.1': {}
 
