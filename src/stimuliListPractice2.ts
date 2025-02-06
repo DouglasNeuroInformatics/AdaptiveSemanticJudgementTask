@@ -1,0 +1,133 @@
+import type { WordPairStimulus } from "./schemas";
+
+const stimuliListPractice2 = [
+  {
+    stimulus: "bread",
+    prompt: "butter",
+    difficultyLevel: 1,
+    language: "en",
+    relation: "related",
+  },
+  {
+    stimulus: "bread",
+    prompt: "lamp",
+    difficultyLevel: 2,
+    language: "en",
+    relation: "unrelated",
+  },
+  {
+    stimulus: "bread",
+    prompt: "toast",
+    difficultyLevel: 3,
+    language: "en",
+    relation: "related",
+  },
+  {
+    stimulus: "bread",
+    prompt: "shoes",
+    difficultyLevel: 4,
+    language: "en",
+    relation: "unrelated",
+  },
+  {
+    stimulus: "bread",
+    prompt: "flour",
+    difficultyLevel: 5,
+    language: "en",
+    relation: "related",
+  },
+  {
+    stimulus: "bread",
+    prompt: "chair",
+    difficultyLevel: 6,
+    language: "en",
+    relation: "unrelated",
+  },
+  {
+    stimulus: "bread",
+    prompt: "bakery",
+    difficultyLevel: 7,
+    language: "en",
+    relation: "related",
+  },
+  {
+    stimulus: "bread",
+    prompt: "phone",
+    difficultyLevel: 8,
+    language: "en",
+    relation: "unrelated",
+  },
+  {
+    stimulus: "bread",
+    prompt: "yeast",
+    difficultyLevel: 9,
+    language: "en",
+    relation: "related",
+  },
+
+  {
+    stimulus: "temps",
+    prompt: "table",
+    difficultyLevel: 1,
+    language: "fr",
+    relation: "unrelated",
+  },
+  {
+    stimulus: "temps",
+    prompt: "heure",
+    difficultyLevel: 2,
+    language: "fr",
+    relation: "related",
+  },
+  {
+    stimulus: "temps",
+    prompt: "chat",
+    difficultyLevel: 3,
+    language: "fr",
+    relation: "unrelated",
+  },
+  {
+    stimulus: "temps",
+    prompt: "horloge",
+    difficultyLevel: 4,
+    language: "fr",
+    relation: "related",
+  },
+  {
+    stimulus: "temps",
+    prompt: "jardin",
+    difficultyLevel: 5,
+    language: "fr",
+    relation: "unrelated",
+  },
+  {
+    stimulus: "temps",
+    prompt: "météo",
+    difficultyLevel: 6,
+    language: "fr",
+    relation: "related",
+  },
+  {
+    stimulus: "temps",
+    prompt: "verre",
+    difficultyLevel: 7,
+    language: "fr",
+    relation: "unrelated",
+  },
+  {
+    stimulus: "temps",
+    prompt: "durée",
+    difficultyLevel: 8,
+    language: "fr",
+    relation: "related",
+  },
+  {
+    stimulus: "temps",
+    prompt: "arbre",
+    difficultyLevel: 9,
+    language: "fr",
+    relation: "unrelated",
+  },
+] as WordPairStimulus[];
+
+export { stimuliListPractice2 };
