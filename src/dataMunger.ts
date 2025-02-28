@@ -81,7 +81,6 @@ function exportToJsonSerializable(data: ExperimentResults[]): {
     experimentResults: data.map((result) => ({
       word_pair: result.stimulus + " " + result.prompt,
       correctResponse: result.correctResponse,
-      response: result.response,
       userChoice: result.userChoice,
       difficultyLevel: result.difficultyLevel,
       language: result.language,
