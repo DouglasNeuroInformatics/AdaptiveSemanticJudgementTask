@@ -54,7 +54,7 @@ export const $ODCExport = z.object({
   word_pair: z.string(),
   correctResponse: z.enum(["related", "unrelated"]),
   response: z.number(),
-  userChoice: z.enum(["related", "unrelated"]),
+  userChoice: z.enum(["related", "unrelated","timeout"]),
   difficultyLevel: z.number(),
   language: z.string(),
   rt: z.number(),
