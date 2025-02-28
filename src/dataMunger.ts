@@ -79,7 +79,7 @@ function exportToJsonSerializable(data: ExperimentResults[]): {
     version: "1.0",
     timestamp: getLocalTime(),
     experimentResults: data.map((result) => ({
-      word_pair: result.stimulus + result.prompt,
+      word_pair: result.stimulus + " " + result.prompt,
       correctResponse: result.correctResponse,
       response: result.response,
       userChoice: result.userChoice,

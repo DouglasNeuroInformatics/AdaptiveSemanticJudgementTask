@@ -527,13 +527,16 @@ export async function adaptiveSemanticJudgementTask(
         }
         // difficulty level logic, <x> correct answers in a row, increase, <y> incorrect answer decrease
         if (numberOfCorrectAnswers === advancementSchedule) {
+          // reset
+            numberOfCorrectAnswers = 0;
           if (numberOfCorrectAnswers <= numberOfLevels) {
             currentDifficultyLevel++;
             // need to reset as difficulty has changed
-            numberOfCorrectAnswers = 0;
             clearSet = true;
           }
         } else if (numberOfIncorrectAnswers === regressionSchedule) {
+          // reset 
+          numberOfIncorrectAnswers = 0
           if (currentDifficultyLevel > 1) {
             currentDifficultyLevel--;
           }
