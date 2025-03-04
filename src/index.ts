@@ -1,35 +1,52 @@
-import { experimentSettingsJson } from "./experimentSettings.ts";
-import { jsPsychExperiment } from "./jsPsychExperiment.ts";
-import { $ExperimentResults } from "./schemas.ts";
-
 import type { Language } from "/runtime/v1/@opendatacapture/runtime-core";
 
-import "/runtime/v1/jspsych@8.x/css/jspsych.css";
+import { adaptiveSemanticJudgementTask } from "./adaptiveSemanticJudgementTask.ts";
+import { experimentSettingsJson } from "./experimentSettings.ts";
+import { $ODCExport, $Settings } from "./schemas.ts";
+import { translator } from "./translator.ts";
 
-import { defineInstrument } from "/runtime/v1/@opendatacapture/runtime-core";
+import "/runtime/v1/jspsych@8.x/css/jspsych.css";
+import { z } from "/runtime/v1/zod@3.23.x";
+const { defineInstrument } = await import(
+  "/runtime/v1/@opendatacapture/runtime-core/index.js"
+);
 
 export default defineInstrument({
   kind: "INTERACTIVE",
-  // if multilingual experimentSettingsJson needs a language field 
   language: experimentSettingsJson.language as Language,
   internal: {
     edition: 1,
-    name: "<PLACEHOLDER>",
+    name: "AdaptiveSemanticJudgementTask",
   },
-  tags: ["interactive", "jsPysch", "PLACEHOLDER"],
+  tags: ["interactive", "jsPsych", "AdaptiveSemanticJudgementTask"],
   content: {
     async render(done) {
-      await jsPsychExperiment(done);
+      const settingsParseResult = $Settings.safeParse(experimentSettingsJson);
+
+      // parse settings
+      if (!settingsParseResult.success) {
+        throw new Error("validation error, check experiment settings", {
+          cause: settingsParseResult.error,
+        });
+      }
+
+      translator.init();
+      translator.changeLanguage(settingsParseResult.data.language);
+      await adaptiveSemanticJudgementTask(done);
     },
   },
   details: {
-    description: "A jsPysch experiment developed by the DNP",
-    estimatedDuration: 1,
+    description:
+      "Displays and reads aloud two words to the participant. The participant then has to determine if the words are related or unrelated",
+    estimatedDuration: 15,
     instructions: ["<PLACEHOLDER>"],
-    // make sure license is correct
-    license: "Apache-2.0",
-    title: "<PLACEHOLDER>",
+    license: "UNLICENSED",
+    title: "Adaptive Semantic Judgement Task",
   },
   measures: {},
-  validationSchema: $ExperimentResults,
+  validationSchema: z.object({
+    version: z.string(),
+    timestamp: z.string(),
+    experimentResults: z.array($ODCExport),
+  }),
 });
