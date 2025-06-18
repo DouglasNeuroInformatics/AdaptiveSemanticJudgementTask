@@ -3,6 +3,9 @@ site_description: Documentation for Adaptive Semantic Judgement Task
 site_url: https://adaptivesemanticjudgementtask.readthedocs.io/
 repo_url: https://github.com/DouglasNeuroInformatics/AdaptiveSemanticJudgementTask
 repo_name: DouglasNeuroInformatics/AdaptiveSemanticJudgementTask
+
+nav:
+  - index.md
 theme:
   name: material
 markdown_extensions:
