@@ -1,7 +1,7 @@
 {
   "name": "adaptive-semantic-judgement-task",
   "type": "module",
-  "version": "0.1.0",
+  "version": "1.0.1",
   "packageManager": "pnpm@9.1.4",
   "description": "This task shows word pairs and uses speech synthesis to read them out. The participant then has to decide if the words are related or unrelated",
   "author": "Cian Monnin",
