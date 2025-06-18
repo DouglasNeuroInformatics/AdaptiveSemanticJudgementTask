@@ -7,6 +7,7 @@ export default defineConfig({
   base: process.env.VITE_BASE || "/",
   build: {
     target: "es2022", //browsers can handle the latest ES features
+    sourcemap: true,
   },
   resolve: {
     // required for runtime imports

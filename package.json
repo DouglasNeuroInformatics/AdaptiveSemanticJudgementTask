@@ -1,26 +1,31 @@
 {
-  "name": "DNP jsPysch Template",
-  "version": "0.1.0",
-  "author": "Cian Monnin",
-  "description": "<PLACEHOLDER>",
+  "name": "adaptive-semantic-judgement-task",
   "type": "module",
+  "version": "1.0.1",
+  "packageManager": "pnpm@9.1.4",
+  "description": "This task shows word pairs and uses speech synthesis to read them out. The participant then has to decide if the words are related or unrelated",
+  "author": "Cian Monnin",
   "scripts": {
-    "dev": "vite",
     "build": "tsc && vite build",
+    "dev": "vite",
     "lint": "tsc && eslint --fix src",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@opendatacapture/runtime-v1": "latest",
+    "@opendatacapture/runtime-v1": "^1.8.2",
     "docsify": "^4.13.1"
   },
   "devDependencies": {
-    "@douglasneuroinformatics/eslint-config": "^4.3.0",
-    "@douglasneuroinformatics/tsconfig": "^1.0.1",
-    "@types/node": "^20.14.12",
-    "eslint": "^8.57.0",
+    "@douglasneuroinformatics/eslint-config": "^5.2.4",
+    "@douglasneuroinformatics/tsconfig": "^1.0.2",
+    "@types/node": "^20.17.8",
+    "eslint": "^9.17.0",
     "typescript": "~5.5.4",
-    "vite": "^5.3.4"
+    "vite": "^5.4.12"
   },
-  "packageManager": "pnpm@9.1.4"
+  "pnpm": {
+    "overrides": {
+      "marked": "15.0.3"
+    }
+  }
 }

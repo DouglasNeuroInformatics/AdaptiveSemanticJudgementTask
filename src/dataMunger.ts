@@ -1,33 +1,42 @@
 import { $ExperimentResults } from "./schemas.ts";
 
-import type { ExperimentResults, LoggingTrial } from "./schemas.ts";
+import type { ExperimentResults, WordPairTrial } from "./schemas.ts";
 import type { DataCollection } from "/runtime/v1/jspsych@8.x";
 
-import { DOMPurify } from "/runtime/v1/dompurify@3.x";
-
-function dataMunger(data: DataCollection) {
+function dataMunger(data: DataCollection, numberOfTrialsToRun: number) {
   const trials = data
-    .filter({ trial_type: "survey-html-form" })
-    .values() as LoggingTrial[];
+    .filterCustom((trial: WordPairTrial) => {
+      return (
+        trial.trial_type === "text-to-speech-button-response" &&
+        (trial.result === "correct" || trial.result === "incorrect")
+      );
+    })
+    .values() as WordPairTrial[];
   const experimentResults: ExperimentResults[] = [];
   for (let trial of trials) {
-    // parsed experimentResults go here
     const result = $ExperimentResults.parse({
-      //example:
+      language: trial.language,
+      // not required for further processing
+      relation: trial.correctResponse,
+      // not required for further processing
+      responseResult: trial.result,
+      prompt: trial.prompt,
       stimulus: trial.stimulus,
       correctResponse: trial.correctResponse,
+      response: trial.response,
       difficultyLevel: trial.difficultyLevel,
-      language: trial.language,
       rt: trial.rt,
-      responseResult: trial.response.result,
-      responseNotes: DOMPurify.sanitize(trial.response.notes),
+      userChoice: trial.userChoice,
+      result: trial.result,
     });
     experimentResults.push(result);
   }
-
-  return experimentResults;
+  const arrayLength = experimentResults.length;
+  const indexToSlice = arrayLength - numberOfTrialsToRun;
+  return experimentResults.slice(indexToSlice);
 }
 
+// not used
 function arrayToCSV(array: ExperimentResults[]) {
   const header = Object.keys(array[0]!).join(",");
   const trials = array
@@ -36,6 +45,7 @@ function arrayToCSV(array: ExperimentResults[]) {
   return `${header}\n${trials}`;
 }
 
+// not used
 function downloadCSV(dataForCSV: string, filename: string) {
   const blob = new Blob([dataForCSV], { type: "text/csv;charset=utf8" });
   const url = URL.createObjectURL(blob);
@@ -46,6 +56,7 @@ function downloadCSV(dataForCSV: string, filename: string) {
   link.click();
   document.body.removeChild(link);
 }
+
 function getLocalTime() {
   const localTime = new Date();
 
@@ -68,26 +79,30 @@ function exportToJsonSerializable(data: ExperimentResults[]): {
     version: "1.0",
     timestamp: getLocalTime(),
     experimentResults: data.map((result) => ({
-      // create appropriate mapping, example:
-      stimulus: result.stimulus,
+      word_pair: result.stimulus + " " + result.prompt,
       correctResponse: result.correctResponse,
+      userChoice: result.userChoice,
       difficultyLevel: result.difficultyLevel,
       language: result.language,
       rt: result.rt,
-      responseResult: result.responseResult,
-      responseNotes: result.responseNotes,
     })),
   };
 }
 
-export function transformAndDownload(data: DataCollection) {
-  const mungedData = dataMunger(data);
+export function transformAndDownload(
+  data: DataCollection,
+  numberOfTrialsToRun: number,
+) {
+  const mungedData = dataMunger(data, numberOfTrialsToRun);
   const dataForCSV = arrayToCSV(mungedData);
   const currentDate = getLocalTime();
   downloadCSV(dataForCSV, `${currentDate}.csv`);
 }
-export function transformAndExportJson(data: DataCollection): any {
-  const mungedData = dataMunger(data);
+export function transformAndExportJson(
+  data: DataCollection,
+  numberOfTrialsToRun: number,
+): any {
+  const mungedData = dataMunger(data, numberOfTrialsToRun);
   const jsonSerializableData = exportToJsonSerializable(mungedData);
   return JSON.parse(JSON.stringify(jsonSerializableData));
 }

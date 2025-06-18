@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="https://unpkg.com/jspsych"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.0.0"></script>
+    <!-- The plugin is loaded here -->
+    <script src="../dist/index.js"></script>
+    <!-- <script src="../dist/index.global.js"></script> -->
+    <link rel="stylesheet" href="https://unpkg.com/jspsych/css/jspsych.css" />
+  </head>
+
+  <body></body>
+  <script>
+    const jsPsych = initJsPsych({
+      on_finish: function () {
+        jsPsych.data.displayData();
+      },
+    });
+    const welcome = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: "Welcome to the experiment. Press any key to begin.",
+    };
+    const trial = {
+      type: TextToSpeechButtonPluginResponse,
+      stimulus: "This is a test string",
+      choices: ["yes", "no"],
+    };
+
+    jsPsych.run([welcome, trial]);
+  </script>
+</html>
