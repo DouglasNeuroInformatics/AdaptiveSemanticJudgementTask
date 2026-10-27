@@ -2,7 +2,7 @@
   "name": "adaptive-semantic-judgement-task",
   "type": "module",
   "version": "1.0.1",
-  "packageManager": "pnpm@10.10.0",
+  "packageManager": "pnpm@10.34.7",
   "description": "This task shows word pairs and uses speech synthesis to read them out. The participant then has to decide if the words are related or unrelated",
   "author": "Cian Monnin",
   "scripts": {
@@ -21,11 +21,24 @@
     "@types/node": "^20.17.8",
     "eslint": "^9.17.0",
     "typescript": "~5.5.4",
-    "vite": "^5.4.12"
+    "vite": "^6.4.4"
   },
   "pnpm": {
     "overrides": {
-      "marked": "15.0.3"
-    }
+      "marked": "15.0.3",
+      "brace-expansion@<2": "^1.1.21",
+      "brace-expansion@>=2 <3": "^2.0.2",
+      "brace-expansion@>=3": "^5.0.12",
+      "js-yaml@>=4": "^4.3.2",
+      "nanoid@<4": "^3.3.18",
+      "postcss": "^8.5.23",
+      "postcss-selector-parser@<7": "^6.1.5",
+      "postcss-selector-parser@>=7": "^7.1.6",
+      "source-map-js": "^1.2.2"
+    },
+    "ignoredBuiltDependencies": [
+      "docsify",
+      "esbuild"
+    ]
   }
 }
